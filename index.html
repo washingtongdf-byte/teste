@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitar Cotação | Jobren Transportes</title>
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --bg-dark: #0b0b0b;
+            --card-bg: #161616;
+            --text-color: #ffffff;
+            --input-bg: #222;
+        }
+
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background-color: var(--bg-dark); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        .form-card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid #333;
+            text-align: center;
+        }
+
+        h2 { color: var(--primary-color); text-transform: uppercase; margin-bottom: 25px; letter-spacing: 1px; }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 15px;
+            background: var(--input-bg);
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus { border-color: var(--primary-color); box-shadow: 0 0 8px rgba(0, 123, 255, 0.2); }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover { background-color: #0056b3; transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+
+    <div class="form-card">
+        <h2>Cotação de Frete</h2>
+        <form id="leadForm">
+            <input type="text" id="nome" placeholder="Seu nome" required>
+            <input type="tel" id="telefone" placeholder="WhatsApp" required>
+            
+            <select id="tipoServico" required>
+                <option value="" disabled selected>O que você precisa?</option>
+                <option value="Palete">Transporte de Palete</option>
+                <option value="Mudanca">Mudança</option>
+            </select>
+
+            <textarea id="mensagem" rows="4" placeholder="Detalhes da carga"></textarea>
+            <button type="submit" id="btn-submit">ENVIAR COTAÇÃO</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("leadForm").addEventListener("submit", async function(e){
+            e.preventDefault();
+            const btn = document.getElementById("btn-submit");
+            btn.disabled = true;
+            btn.innerText = "ENVIANDO...";
+            
+            const data = {
+                nome: document.getElementById("nome").value,
+                telefone: document.getElementById("telefone").value,
+                servico: document.getElementById("tipoServico").value,
+                mensagem: document.getElementById("mensagem").value,
+                pagina: window.location.href
+            };
+
+            try {
+                const response = await fetch("https://painelcotacao.vercel.app/api/leads", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    alert("Solicitação enviada com sucesso!");
+                    document.getElementById("leadForm").reset();
+                } else {
+                    alert("Erro ao enviar. Tente novamente.");
+                }
+            } catch (err) {
+                alert("Erro ao conectar ao servidor.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "ENVIAR COTAÇÃO";
+            }
+        });
+    </script>
+</body>
+</html>
