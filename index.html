@@ -7,19 +7,13 @@
     <style>
         :root { --primary-color: #007bff; --bg-dark: #0b0b0b; --card-bg: #161616; --text-color: #ffffff; --input-bg: #222; }
         body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-dark); display: flex; justify-content: center; align-items: center; min-height: 100vh; color: var(--text-color); margin: 0; padding: 20px; }
-        
-        .form-card { background: var(--card-bg); padding: 40px; border-radius: 16px; width: 100%; max-width: 600px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #333; text-align: left; }
+        .form-card { background: var(--card-bg); padding: 40px; border-radius: 16px; width: 100%; max-width: 600px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #333; }
         h2 { color: var(--primary-color); text-transform: uppercase; margin-bottom: 25px; text-align: center; }
-        
         label { display: block; margin-bottom: 5px; font-size: 14px; color: #bbb; }
         input, textarea, select { width: 100%; padding: 12px; margin-bottom: 15px; background: var(--input-bg); border: 1px solid #444; border-radius: 8px; color: white; font-size: 15px; box-sizing: border-box; }
-        
-        /* Sistema de Grid Simples */
         .row { display: flex; flex-wrap: wrap; gap: 15px; }
         .col-6 { flex: 1 1 calc(50% - 15px); min-width: 250px; }
         .col-lg-12 { flex: 1 1 100%; }
-        .d-none { display: none; }
-
         button { width: 100%; padding: 16px; background-color: var(--primary-color); border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
         button:hover { background-color: #0056b3; }
         button:disabled { background-color: #444; cursor: not-allowed; }
@@ -29,10 +23,7 @@
 
     <div class="form-card">
         <h2>Cotação de Frete</h2>
-        
         <form id="leadForm">
-            <input type="text" name="company" style="display:none">
-
             <div class="row">
                 <div class="col-6">
                     <label>Origem</label>
@@ -42,24 +33,17 @@
                     <label>Destino</label>
                     <input type="text" id="destino" placeholder="Ex.: Rio de Janeiro - RJ" required>
                 </div>
-
-                <div class="col-lg-4 d-none">
-                    <label>Valor</label>
-                    <input type="text" id="valor" placeholder="Ex.: R$10.000,00">
-                </div>
-
                 <div class="col-6">
                     <label>Nome</label>
-                    <input type="text" id="nome" placeholder="Ex.: João" required>
+                    <input type="text" id="nome" placeholder="Seu nome" required>
                 </div>
                 <div class="col-6">
                     <label>Telefone/Celular</label>
-                    <input type="tel" id="telefone" placeholder="Ex.: (99) 99999-9999" required>
+                    <input type="tel" id="telefone" placeholder="(99) 99999-9999" required>
                 </div>
-
                 <div class="col-6">
-                    <label>E-mail</label>
-                    <input type="email" id="email" placeholder="Ex.: seunome@empresa.com.br" required>
+                    <label>E-mail (Opcional)</label>
+                    <input type="email" id="email" placeholder="seu@email.com">
                 </div>
                 <div class="col-6">
                     <label>Serviço</label>
@@ -71,12 +55,10 @@
                         <option value="Mudanca">Mudança</option>
                     </select>
                 </div>
-
                 <div class="col-lg-12">
-                    <label>Mais informações da carga <small>(peso, quantidade, valor e outros)</small></label>
+                    <label>Detalhes da Carga</label>
                     <textarea id="mensagem" rows="3" required></textarea>
                 </div>
-
                 <div class="col-lg-12">
                     <button type="submit" id="btn-submit">ENVIAR COTAÇÃO</button>
                 </div>
@@ -94,16 +76,15 @@
             btn.disabled = true;
             btn.innerText = "ENVIANDO...";
 
-            // Captura de todos os campos para o Supabase
+            // Montando os dados exatamente como estão na sua tabela (imagem)
             const data = {
                 nome: document.getElementById("nome").value,
                 telefone: document.getElementById("telefone").value,
-                email: document.getElementById("email").value,
+                mensagem: document.getElementById("mensagem").value,
+                servico: document.getElementById("tipoServico").value,
+                email: document.getElementById("email").value || null, // Se vazio, envia nulo
                 origem: document.getElementById("origem").value,
                 destino: document.getElementById("destino").value,
-                servico: document.getElementById("tipoServico").value,
-                mensagem: document.getElementById("mensagem").value,
-                valor_estimado: document.getElementById("valor").value, // Campo adicional
                 pagina: window.location.href,
                 status: 'novo'
             };
@@ -124,13 +105,12 @@
                     alert("Solicitação enviada com sucesso!");
                     document.getElementById("leadForm").reset();
                 } else {
-                    const error = await response.text();
-                    console.error("Erro Supabase:", error);
-                    alert("Erro ao enviar para o banco de dados.");
+                    const errorData = await response.json();
+                    console.error("Erro Supabase:", errorData);
+                    alert("Erro ao enviar: " + errorData.message);
                 }
             } catch (err) {
-                console.error("Erro de conexão:", err);
-                alert("Erro ao conectar ao servidor.");
+                alert("Erro de conexão com o servidor.");
             } finally {
                 btn.disabled = false;
                 btn.innerText = "ENVIAR COTAÇÃO";
