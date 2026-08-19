@@ -150,7 +150,6 @@
 
                 <div class="col-6">
                     <label for="origem">Origem</label>
-
                     <input
                         type="text"
                         id="origem"
@@ -161,7 +160,6 @@
 
                 <div class="col-6">
                     <label for="destino">Destino</label>
-
                     <input
                         type="text"
                         id="destino"
@@ -172,7 +170,6 @@
 
                 <div class="col-6">
                     <label for="nome">Nome</label>
-
                     <input
                         type="text"
                         id="nome"
@@ -183,7 +180,6 @@
 
                 <div class="col-6">
                     <label for="telefone">Telefone/Celular</label>
-
                     <input
                         type="tel"
                         id="telefone"
@@ -194,7 +190,6 @@
 
                 <div class="col-6">
                     <label for="email">E-mail</label>
-
                     <input
                         type="email"
                         id="email"
@@ -305,48 +300,42 @@
 
             const cotacao = {
 
-                nome:
+                p_nome:
                     document.getElementById("nome").value.trim(),
 
-                empresa:
+                p_empresa:
                     null,
 
-                whatsapp:
+                p_whatsapp:
                     document.getElementById("telefone").value.trim(),
 
-                email:
+                p_email:
                     document.getElementById("email").value.trim() || null,
 
-                origem:
+                p_origem:
                     document.getElementById("origem").value.trim(),
 
-                destino:
+                p_destino:
                     document.getElementById("destino").value.trim(),
 
-                tipo_carga:
+                p_tipo_carga:
                     document.getElementById("tipoServico").value,
 
-                volumes:
+                p_volumes:
                     0,
 
-                peso:
+                p_peso:
                     0,
 
-                observacoes:
-                    document.getElementById("mensagem").value.trim(),
-
-                status:
-                    "NOVA",
-
-                valor_frete:
-                    0
+                p_observacoes:
+                    document.getElementById("mensagem").value.trim()
             };
 
 
             try {
 
                 const response = await fetch(
-                    `${SUPABASE_URL}/rest/v1/cotacoes`,
+                    `${SUPABASE_URL}/rest/v1/rpc/criar_cotacao_publica`,
                     {
                         method: "POST",
 
@@ -358,8 +347,8 @@
                             "apikey":
                                 SUPABASE_KEY,
 
-                            "Prefer":
-                                "return=representation"
+                            "Authorization":
+                                `Bearer ${SUPABASE_KEY}`
                         },
 
                         body:
