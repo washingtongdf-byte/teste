@@ -4,118 +4,529 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solicitar Cotação | Jobren Transportes</title>
+
     <style>
-        :root { --primary-color: #007bff; --bg-dark: #0b0b0b; --card-bg: #161616; --text-color: #ffffff; --input-bg: #222; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-dark); display: flex; justify-content: center; align-items: center; min-height: 100vh; color: var(--text-color); margin: 0; padding: 20px; }
-        .form-card { background: var(--card-bg); padding: 40px; border-radius: 16px; width: 100%; max-width: 600px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #333; }
-        h2 { color: var(--primary-color); text-transform: uppercase; margin-bottom: 25px; text-align: center; }
-        label { display: block; margin-bottom: 5px; font-size: 14px; color: #bbb; }
-        input, textarea, select { width: 100%; padding: 12px; margin-bottom: 15px; background: var(--input-bg); border: 1px solid #444; border-radius: 8px; color: white; font-size: 15px; box-sizing: border-box; }
-        .row { display: flex; flex-wrap: wrap; gap: 15px; }
-        .col-6 { flex: 1 1 calc(50% - 15px); min-width: 250px; }
-        .col-lg-12 { flex: 1 1 100%; }
-        button { width: 100%; padding: 16px; background-color: var(--primary-color); border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
-        button:hover { background-color: #0056b3; }
-        button:disabled { background-color: #444; cursor: not-allowed; }
+        :root {
+            --primary-color: #007bff;
+            --bg-dark: #0b0b0b;
+            --card-bg: #161616;
+            --text-color: #ffffff;
+            --input-bg: #222;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .form-card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid #333;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            text-transform: uppercase;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #bbb;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            background: var(--input-bg);
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: white;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .col-6 {
+            flex: 1 1 calc(50% - 15px);
+            min-width: 250px;
+        }
+
+        .col-lg-12 {
+            flex: 1 1 100%;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:disabled {
+            background-color: #444;
+            cursor: not-allowed;
+        }
+
+        #mensagem-status {
+            display: none;
+            margin-bottom: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        #mensagem-status.sucesso {
+            display: block;
+            background: rgba(25, 135, 84, 0.15);
+            border: 1px solid #198754;
+            color: #75d69c;
+        }
+
+        #mensagem-status.erro {
+            display: block;
+            background: rgba(220, 53, 69, 0.15);
+            border: 1px solid #dc3545;
+            color: #ff8d98;
+        }
     </style>
 </head>
+
 <body>
 
     <div class="form-card">
+
         <h2>Cotação de Frete</h2>
-        <form id="leadForm">
+
+        <div id="mensagem-status"></div>
+
+        <form id="cotacaoForm">
+
             <div class="row">
+
                 <div class="col-6">
-                    <label>Origem</label>
-                    <input type="text" id="origem" placeholder="Ex.: São Paulo - SP" required>
+                    <label for="origem">Origem</label>
+                    <input
+                        type="text"
+                        id="origem"
+                        placeholder="Ex.: São Paulo - SP"
+                        required
+                    >
                 </div>
+
                 <div class="col-6">
-                    <label>Destino</label>
-                    <input type="text" id="destino" placeholder="Ex.: Rio de Janeiro - RJ" required>
+                    <label for="destino">Destino</label>
+                    <input
+                        type="text"
+                        id="destino"
+                        placeholder="Ex.: Rio de Janeiro - RJ"
+                        required
+                    >
                 </div>
+
                 <div class="col-6">
-                    <label>Nome</label>
-                    <input type="text" id="nome" placeholder="Seu nome" required>
+                    <label for="nome">Nome</label>
+                    <input
+                        type="text"
+                        id="nome"
+                        placeholder="Seu nome"
+                        required
+                    >
                 </div>
+
                 <div class="col-6">
-                    <label>Telefone/Celular</label>
-                    <input type="tel" id="telefone" placeholder="(99) 99999-9999" required>
+                    <label for="telefone">Telefone/Celular</label>
+                    <input
+                        type="tel"
+                        id="telefone"
+                        placeholder="(99) 99999-9999"
+                        required
+                    >
                 </div>
+
                 <div class="col-6">
-                    <label>E-mail (Opcional)</label>
-                    <input type="email" id="email" placeholder="seu@email.com">
+                    <label for="email">E-mail</label>
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="seu@email.com"
+                    >
                 </div>
+
                 <div class="col-6">
-                    <label>Serviço</label>
+                    <label for="tipoServico">Serviço</label>
+
                     <select id="tipoServico" required>
-                        <option value="" disabled selected>O que você precisa?</option>
-                        <option value="Transporte de cargas">Transporte de cargas</option>
-                        <option value="Transporte fracionado">Transporte fracionado</option>
-                        <option value="Entregas urgentes">Entregas urgentes</option>
-                        <option value="Mudanca">Mudança</option>
+                        <option value="" disabled selected>
+                            O que você precisa?
+                        </option>
+
+                        <option value="Transporte de cargas">
+                            Transporte de cargas
+                        </option>
+
+                        <option value="Transporte fracionado">
+                            Transporte fracionado
+                        </option>
+
+                        <option value="Entregas urgentes">
+                            Entregas urgentes
+                        </option>
+
+                        <option value="Mudança">
+                            Mudança
+                        </option>
                     </select>
                 </div>
+
                 <div class="col-lg-12">
-                    <label>Detalhes da Carga</label>
-                    <textarea id="mensagem" rows="3" required></textarea>
+
+                    <label for="mensagem">
+                        Detalhes da Carga
+                    </label>
+
+                    <textarea
+                        id="mensagem"
+                        rows="4"
+                        placeholder="Informe peso, quantidade de volumes, tipo de mercadoria e outras informações."
+                        required
+                    ></textarea>
+
                 </div>
+
                 <div class="col-lg-12">
-                    <button type="submit" id="btn-submit">ENVIAR COTAÇÃO</button>
+
+                    <button
+                        type="submit"
+                        id="btn-submit"
+                    >
+                        ENVIAR COTAÇÃO
+                    </button>
+
                 </div>
+
             </div>
+
         </form>
+
     </div>
 
     <script>
-        const SUPABASE_URL = "https://zsciluvxnrwvviudnmak.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_Mt2xXgAjpmy58SEu2HNs3Q_QcK_yvXn";
 
-        document.getElementById("leadForm").addEventListener("submit", async function(e){
-            e.preventDefault();
-            const btn = document.getElementById("btn-submit");
-            btn.disabled = true;
-            btn.innerText = "ENVIANDO...";
+        /*
+         * ============================================================
+         * CONFIGURAÇÃO DO SUPABASE
+         * ============================================================
+         */
 
-            // Montando os dados exatamente como estão na sua tabela (imagem)
-            const data = {
-                nome: document.getElementById("nome").value,
-                telefone: document.getElementById("telefone").value,
-                mensagem: document.getElementById("mensagem").value,
-                servico: document.getElementById("tipoServico").value,
-                email: document.getElementById("email").value || null, // Se vazio, envia nulo
-                origem: document.getElementById("origem").value,
-                destino: document.getElementById("destino").value,
-                pagina: window.location.href,
-                status: 'novo'
+        const SUPABASE_URL =
+            "https://qfrojpbwnkbmgjqsnong.supabase.co";
+
+        const SUPABASE_KEY =
+            "sb_publishable_5iBTdmkrd-AKXnPVAwFUUw_Lzmz1ARO";
+
+
+        /*
+         * ============================================================
+         * FORMULÁRIO
+         * ============================================================
+         */
+
+        const form = document.getElementById("cotacaoForm");
+        const button = document.getElementById("btn-submit");
+        const statusMessage = document.getElementById("mensagem-status");
+
+
+        /*
+         * ============================================================
+         * MOSTRAR MENSAGEM
+         * ============================================================
+         */
+
+        function mostrarMensagem(mensagem, tipo) {
+
+            statusMessage.textContent = mensagem;
+
+            statusMessage.className = tipo;
+
+            statusMessage.style.display = "block";
+
+        }
+
+
+        /*
+         * ============================================================
+         * ENVIO DA COTAÇÃO
+         *
+         * SITE
+         *   ↓
+         * SUPABASE
+         *   ↓
+         * public.cotacoes
+         *   ↓
+         * status NOVA
+         *   ↓
+         * PAINEL DE COTAÇÕES
+         * ============================================================
+         */
+
+        form.addEventListener("submit", async function(event) {
+
+            event.preventDefault();
+
+            statusMessage.style.display = "none";
+
+            button.disabled = true;
+
+            button.textContent = "ENVIANDO...";
+
+
+            /*
+             * Dados do formulário
+             */
+
+            const nome =
+                document.getElementById("nome").value.trim();
+
+            const telefone =
+                document.getElementById("telefone").value.trim();
+
+            const email =
+                document.getElementById("email").value.trim();
+
+            const origem =
+                document.getElementById("origem").value.trim();
+
+            const destino =
+                document.getElementById("destino").value.trim();
+
+            const tipoServico =
+                document.getElementById("tipoServico").value;
+
+            const mensagem =
+                document.getElementById("mensagem").value.trim();
+
+
+            /*
+             * ========================================================
+             * COTAÇÃO
+             *
+             * NÃO envia para leads.
+             *
+             * NÃO identifica transportadora.
+             *
+             * NÃO identifica tenant.
+             *
+             * Vai diretamente para:
+             *
+             * public.cotacoes
+             *
+             * com status NOVA.
+             * ========================================================
+             */
+
+            const cotacao = {
+
+                nome: nome,
+
+                empresa: null,
+
+                whatsapp: telefone,
+
+                email: email || null,
+
+                origem: origem,
+
+                destino: destino,
+
+                tipo_carga: tipoServico,
+
+                volumes: 0,
+
+                peso: 0,
+
+                observacoes: mensagem,
+
+                status: "NOVA",
+
+                valor_frete: 0
+
             };
 
+
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/leads`, {
-                    method: "POST",
-                    headers: { 
-                        "Content-Type": "application/json",
-                        "apikey": SUPABASE_KEY,
-                        "Authorization": `Bearer ${SUPABASE_KEY}`,
-                        "Prefer": "return=minimal"
-                    },
-                    body: JSON.stringify(data)
-                });
-                
+
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/cotacoes`,
+                    {
+                        method: "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json",
+
+                            "apikey":
+                                SUPABASE_KEY,
+
+                            "Authorization":
+                                `Bearer ${SUPABASE_KEY}`,
+
+                            "Prefer":
+                                "return=representation"
+
+                        },
+
+                        body:
+                            JSON.stringify(cotacao)
+
+                    }
+                );
+
+
+                /*
+                 * ====================================================
+                 * SUCESSO
+                 * ====================================================
+                 */
+
                 if (response.ok) {
-                    alert("Solicitação enviada com sucesso!");
-                    document.getElementById("leadForm").reset();
-                } else {
-                    const errorData = await response.json();
-                    console.error("Erro Supabase:", errorData);
-                    alert("Erro ao enviar: " + errorData.message);
+
+                    mostrarMensagem(
+                        "Cotação enviada com sucesso! Nossa equipe recebeu sua solicitação.",
+                        "sucesso"
+                    );
+
+                    form.reset();
+
+                    return;
+
                 }
-            } catch (err) {
-                alert("Erro de conexão com o servidor.");
+
+
+                /*
+                 * ====================================================
+                 * ERRO DO SUPABASE
+                 * ====================================================
+                 */
+
+                let erro;
+
+                try {
+
+                    erro = await response.json();
+
+                } catch {
+
+                    erro = null;
+
+                }
+
+
+                console.error(
+                    "Erro Supabase ao criar cotação:",
+                    erro
+                );
+
+
+                let mensagemErro =
+                    "Não foi possível enviar a cotação.";
+
+
+                if (erro?.message) {
+
+                    mensagemErro =
+                        erro.message;
+
+                }
+
+
+                if (erro?.details) {
+
+                    console.error(
+                        "Detalhes:",
+                        erro.details
+                    );
+
+                }
+
+
+                if (erro?.hint) {
+
+                    console.error(
+                        "Hint:",
+                        erro.hint
+                    );
+
+                }
+
+
+                mostrarMensagem(
+                    mensagemErro,
+                    "erro"
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Erro de conexão:",
+                    error
+                );
+
+
+                mostrarMensagem(
+                    "Erro de conexão com o servidor. Tente novamente.",
+                    "erro"
+                );
+
+
             } finally {
-                btn.disabled = false;
-                btn.innerText = "ENVIAR COTAÇÃO";
+
+                button.disabled = false;
+
+                button.textContent =
+                    "ENVIAR COTAÇÃO";
+
             }
+
         });
+
     </script>
+
 </body>
 </html>
