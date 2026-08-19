@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solicitar Cotação |  Transportes</title>
+    <title>Solicitar Cotação | Transportes</title>
 
     <style>
         :root {
@@ -12,6 +12,10 @@
             --card-bg: #161616;
             --text-color: #ffffff;
             --input-bg: #222;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
@@ -32,7 +36,7 @@
             border-radius: 16px;
             width: 100%;
             max-width: 600px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             border: 1px solid #333;
         }
 
@@ -61,7 +65,13 @@
             border-radius: 8px;
             color: white;
             font-size: 15px;
-            box-sizing: border-box;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
         }
 
         .row {
@@ -140,6 +150,7 @@
 
                 <div class="col-6">
                     <label for="origem">Origem</label>
+
                     <input
                         type="text"
                         id="origem"
@@ -150,6 +161,7 @@
 
                 <div class="col-6">
                     <label for="destino">Destino</label>
+
                     <input
                         type="text"
                         id="destino"
@@ -160,6 +172,7 @@
 
                 <div class="col-6">
                     <label for="nome">Nome</label>
+
                     <input
                         type="text"
                         id="nome"
@@ -170,6 +183,7 @@
 
                 <div class="col-6">
                     <label for="telefone">Telefone/Celular</label>
+
                     <input
                         type="tel"
                         id="telefone"
@@ -180,6 +194,7 @@
 
                 <div class="col-6">
                     <label for="email">E-mail</label>
+
                     <input
                         type="email"
                         id="email"
@@ -342,9 +357,6 @@
 
                             "apikey":
                                 SUPABASE_KEY,
-
-                            "Authorization":
-                                `Bearer ${SUPABASE_KEY}`,
 
                             "Prefer":
                                 "return=representation"
