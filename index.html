@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solicitar Cotação | Jobren Transportes</title>
+    <title>Solicitar Cotação |  Transportes</title>
 
     <style>
         :root {
@@ -191,6 +191,7 @@
                     <label for="tipoServico">Serviço</label>
 
                     <select id="tipoServico" required>
+
                         <option value="" disabled selected>
                             O que você precisa?
                         </option>
@@ -210,6 +211,7 @@
                         <option value="Mudança">
                             Mudança
                         </option>
+
                     </select>
                 </div>
 
@@ -247,12 +249,6 @@
 
     <script>
 
-        /*
-         * ============================================================
-         * CONFIGURAÇÃO DO SUPABASE
-         * ============================================================
-         */
-
         const SUPABASE_URL =
             "https://qfrojpbwnkbmgjqsnong.supabase.co";
 
@@ -260,22 +256,15 @@
             "sb_publishable_5iBTdmkrd-AKXnPVAwFUUw_Lzmz1ARO";
 
 
-        /*
-         * ============================================================
-         * FORMULÁRIO
-         * ============================================================
-         */
+        const form =
+            document.getElementById("cotacaoForm");
 
-        const form = document.getElementById("cotacaoForm");
-        const button = document.getElementById("btn-submit");
-        const statusMessage = document.getElementById("mensagem-status");
+        const button =
+            document.getElementById("btn-submit");
 
+        const statusMessage =
+            document.getElementById("mensagem-status");
 
-        /*
-         * ============================================================
-         * MOSTRAR MENSAGEM
-         * ============================================================
-         */
 
         function mostrarMensagem(mensagem, tipo) {
 
@@ -288,22 +277,6 @@
         }
 
 
-        /*
-         * ============================================================
-         * ENVIO DA COTAÇÃO
-         *
-         * SITE
-         *   ↓
-         * SUPABASE
-         *   ↓
-         * public.cotacoes
-         *   ↓
-         * status NOVA
-         *   ↓
-         * PAINEL DE COTAÇÕES
-         * ============================================================
-         */
-
         form.addEventListener("submit", async function(event) {
 
             event.preventDefault();
@@ -315,76 +288,43 @@
             button.textContent = "ENVIANDO...";
 
 
-            /*
-             * Dados do formulário
-             */
-
-            const nome =
-                document.getElementById("nome").value.trim();
-
-            const telefone =
-                document.getElementById("telefone").value.trim();
-
-            const email =
-                document.getElementById("email").value.trim();
-
-            const origem =
-                document.getElementById("origem").value.trim();
-
-            const destino =
-                document.getElementById("destino").value.trim();
-
-            const tipoServico =
-                document.getElementById("tipoServico").value;
-
-            const mensagem =
-                document.getElementById("mensagem").value.trim();
-
-
-            /*
-             * ========================================================
-             * COTAÇÃO
-             *
-             * NÃO envia para leads.
-             *
-             * NÃO identifica transportadora.
-             *
-             * NÃO identifica tenant.
-             *
-             * Vai diretamente para:
-             *
-             * public.cotacoes
-             *
-             * com status NOVA.
-             * ========================================================
-             */
-
             const cotacao = {
 
-                nome: nome,
+                nome:
+                    document.getElementById("nome").value.trim(),
 
-                empresa: null,
+                empresa:
+                    null,
 
-                whatsapp: telefone,
+                whatsapp:
+                    document.getElementById("telefone").value.trim(),
 
-                email: email || null,
+                email:
+                    document.getElementById("email").value.trim() || null,
 
-                origem: origem,
+                origem:
+                    document.getElementById("origem").value.trim(),
 
-                destino: destino,
+                destino:
+                    document.getElementById("destino").value.trim(),
 
-                tipo_carga: tipoServico,
+                tipo_carga:
+                    document.getElementById("tipoServico").value,
 
-                volumes: 0,
+                volumes:
+                    0,
 
-                peso: 0,
+                peso:
+                    0,
 
-                observacoes: mensagem,
+                observacoes:
+                    document.getElementById("mensagem").value.trim(),
 
-                status: "NOVA",
+                status:
+                    "NOVA",
 
-                valor_frete: 0
-
+                valor_frete:
+                    0
             };
 
 
@@ -408,21 +348,13 @@
 
                             "Prefer":
                                 "return=representation"
-
                         },
 
                         body:
                             JSON.stringify(cotacao)
-
                     }
                 );
 
-
-                /*
-                 * ====================================================
-                 * SUCESSO
-                 * ====================================================
-                 */
 
                 if (response.ok) {
 
@@ -434,15 +366,8 @@
                     form.reset();
 
                     return;
-
                 }
 
-
-                /*
-                 * ====================================================
-                 * ERRO DO SUPABASE
-                 * ====================================================
-                 */
 
                 let erro;
 
@@ -463,40 +388,10 @@
                 );
 
 
-                let mensagemErro =
-                    "Não foi possível enviar a cotação.";
-
-
-                if (erro?.message) {
-
-                    mensagemErro =
-                        erro.message;
-
-                }
-
-
-                if (erro?.details) {
-
-                    console.error(
-                        "Detalhes:",
-                        erro.details
-                    );
-
-                }
-
-
-                if (erro?.hint) {
-
-                    console.error(
-                        "Hint:",
-                        erro.hint
-                    );
-
-                }
-
-
                 mostrarMensagem(
-                    mensagemErro,
+                    erro?.message ||
+                    erro?.details ||
+                    "Não foi possível enviar a cotação.",
                     "erro"
                 );
 
@@ -508,12 +403,10 @@
                     error
                 );
 
-
                 mostrarMensagem(
                     "Erro de conexão com o servidor. Tente novamente.",
                     "erro"
                 );
-
 
             } finally {
 
