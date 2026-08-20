@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -134,16 +133,6 @@
             border: 1px solid #dc3545;
             color: #ff8d98;
         }
-
-        .obrigatorio {
-            color: #ff4d4d;
-        }
-
-        .opcional {
-            color: #888;
-            font-size: 12px;
-            font-weight: normal;
-        }
     </style>
 </head>
 
@@ -159,12 +148,8 @@
 
             <div class="row">
 
-                <!-- ORIGEM -->
                 <div class="col-6">
-                    <label for="origem">
-                        Origem <span class="obrigatorio">*</span>
-                    </label>
-
+                    <label for="origem">Origem</label>
                     <input
                         type="text"
                         id="origem"
@@ -173,12 +158,8 @@
                     >
                 </div>
 
-                <!-- DESTINO -->
                 <div class="col-6">
-                    <label for="destino">
-                        Destino <span class="obrigatorio">*</span>
-                    </label>
-
+                    <label for="destino">Destino</label>
                     <input
                         type="text"
                         id="destino"
@@ -187,12 +168,8 @@
                     >
                 </div>
 
-                <!-- NOME -->
                 <div class="col-6">
-                    <label for="nome">
-                        Nome <span class="obrigatorio">*</span>
-                    </label>
-
+                    <label for="nome">Nome</label>
                     <input
                         type="text"
                         id="nome"
@@ -201,12 +178,8 @@
                     >
                 </div>
 
-                <!-- TELEFONE -->
                 <div class="col-6">
-                    <label for="telefone">
-                        Telefone/Celular <span class="obrigatorio">*</span>
-                    </label>
-
+                    <label for="telefone">Telefone/Celular</label>
                     <input
                         type="tel"
                         id="telefone"
@@ -215,13 +188,8 @@
                     >
                 </div>
 
-                <!-- EMAIL -->
                 <div class="col-6">
-                    <label for="email">
-                        E-mail
-                        <span class="opcional">(opcional)</span>
-                    </label>
-
+                    <label for="email">E-mail</label>
                     <input
                         type="email"
                         id="email"
@@ -229,11 +197,8 @@
                     >
                 </div>
 
-                <!-- SERVIÇO -->
                 <div class="col-6">
-                    <label for="tipoServico">
-                        Serviço <span class="obrigatorio">*</span>
-                    </label>
+                    <label for="tipoServico">Serviço</label>
 
                     <select id="tipoServico" required>
 
@@ -260,12 +225,10 @@
                     </select>
                 </div>
 
-                <!-- VOLUMES -->
-                <div class="col-6">
-                    <label for="volumes">
-                        Quantidade de Volumes <span class="obrigatorio">*</span>
-                    </label>
+                <!-- NOVO: VOLUME OBRIGATÓRIO -->
 
+                <div class="col-6">
+                    <label for="volumes">Quantidade de Volumes</label>
                     <input
                         type="number"
                         id="volumes"
@@ -276,12 +239,10 @@
                     >
                 </div>
 
-                <!-- PESO -->
-                <div class="col-6">
-                    <label for="peso">
-                        Peso Total (kg) <span class="obrigatorio">*</span>
-                    </label>
+                <!-- NOVO: PESO OBRIGATÓRIO -->
 
+                <div class="col-6">
+                    <label for="peso">Peso Total (kg)</label>
                     <input
                         type="number"
                         id="peso"
@@ -292,11 +253,11 @@
                     >
                 </div>
 
-                <!-- VALOR DA NOTA FISCAL -->
+                <!-- NOVO: VALOR DA NOTA OPCIONAL -->
+
                 <div class="col-lg-12">
                     <label for="valorNota">
-                        Valor da Nota Fiscal
-                        <span class="opcional">(opcional)</span>
+                        Valor da Nota Fiscal (opcional)
                     </label>
 
                     <input
@@ -308,24 +269,21 @@
                     >
                 </div>
 
-                <!-- DETALHES DA CARGA -->
                 <div class="col-lg-12">
 
                     <label for="mensagem">
                         Detalhes da Carga
-                        <span class="obrigatorio">*</span>
                     </label>
 
                     <textarea
                         id="mensagem"
                         rows="4"
-                        placeholder="Informe tipo de mercadoria, dimensões, características da carga e outras informações."
+                        placeholder="Informe peso, quantidade de volumes, tipo de mercadoria e outras informações."
                         required
                     ></textarea>
 
                 </div>
 
-                <!-- BOTÃO -->
                 <div class="col-lg-12">
 
                     <button
@@ -407,18 +365,24 @@
                 p_tipo_carga:
                     document.getElementById("tipoServico").value,
 
+                /* NOVO: VOLUME OBRIGATÓRIO */
+
                 p_volumes:
                     Number(
                         document.getElementById("volumes").value
                     ),
+
+                /* NOVO: PESO OBRIGATÓRIO */
 
                 p_peso:
                     Number(
                         document.getElementById("peso").value
                     ),
 
+                /* NOVO: VALOR DA NOTA OPCIONAL */
+
                 p_valor_nota:
-                    document.getElementById("valorNota").value
+                    document.getElementById("valorNota").value.trim() !== ""
                         ? Number(
                             document.getElementById("valorNota").value
                         )
@@ -521,4 +485,3 @@
 
 </body>
 </html>
-```
