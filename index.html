@@ -5,241 +5,584 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Painel de Cotações | MK Logística Express</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--navy:#10243a;--blue:#1769aa;--bg:#f3f6fa;--text:#172536;--muted:#66758a;--line:#e1e8f0;--green:#14804a}
+:root{--navy:#10243a;--navy2:#183c5c;--blue:#1769aa;--blue2:#eaf3fc;--orange:#f59e0b;--bg:#f3f6fa;--text:#172536;--muted:#6b7a8d;--line:#e1e8f0;--green:#14804a;--red:#b42318;--shadow:0 8px 24px #18334d0b}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 Arial,sans-serif}
-header{background:linear-gradient(120deg,#0d2035,#173e61);color:white;padding:22px;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:12px}
-.logo{width:45px;height:45px;border-radius:10px;background:white;color:var(--navy);display:grid;place-items:center;font-weight:900;font-size:18px}
-h1{font-size:20px;margin:0}
-header p{margin:2px 0;color:#d4e1ed;font-size:13px}
-main{max-width:1200px;margin:25px auto;padding:0 18px}
-.topline,.section-title{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.topline{margin-bottom:20px}
-h2{margin:0;font-size:26px}
-p{margin-top:5px}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif}
 button,input,select,textarea{font:inherit}
-button{cursor:pointer;border:0;border-radius:8px;padding:10px 13px;font-weight:bold}
-.primary{background:var(--blue);color:white}
+button{cursor:pointer;border:0;border-radius:10px;padding:10px 14px;font-weight:700}
+button:disabled{opacity:.55;cursor:wait}
+.primary{background:var(--blue);color:#fff}
+.primary:hover{background:#12578e}
 .secondary{background:#eaf1f8;color:#193d5e}
 .success{background:#e1f5e9;color:#126b3c}
 .danger{background:#fff0f0;color:#a12828}
-.outline{background:white;border:1px solid var(--line);color:var(--text)}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-.stat,.panel,.quote{background:white;border:1px solid var(--line);border-radius:13px;padding:16px}
-.stat span{display:block;color:var(--muted);font-size:13px}
-.stat strong{display:block;font-size:27px}
-.panel{margin-bottom:20px}
-.filters{display:grid;grid-template-columns:1.5fr 1fr 1fr auto;gap:10px}
-.field{width:100%;padding:11px;border:1px solid #d5dee8;border-radius:8px;background:white;color:var(--text)}
-.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
-.quote{box-shadow:0 3px 12px #142b4210;min-width:0}
-.quote-top{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.outline{background:#fff;border:1px solid var(--line);color:var(--text)}
+.field{width:100%;padding:12px 13px;border:1px solid #d5dee8;border-radius:10px;background:#fff;color:var(--text);outline:none}
+.field:focus{border-color:#5b9bd5;box-shadow:0 0 0 3px #1769aa1a}
+header{background:linear-gradient(120deg,var(--navy),var(--navy2));color:#fff;padding:18px clamp(16px,4vw,42px);display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;box-shadow:0 4px 18px #10243a20}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:46px;height:46px;flex:0 0 46px;border-radius:13px;background:#fff;color:var(--navy);display:grid;place-items:center;font-weight:950;font-size:18px;box-shadow:inset 0 -4px 0 var(--orange)}
+h1{font-size:19px;margin:0;letter-spacing:.1px}
+header p{margin:2px 0;color:#d4e1ed;font-size:13px}
+.header-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.signed{font-size:13px;color:#d4e1ed}
+main{max-width:1320px;margin:28px auto;padding:0 22px}
+.topline,.section-title{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.topline{margin-bottom:22px}
+h2{margin:0;font-size:clamp(23px,3vw,30px);letter-spacing:-.5px}
+h3{margin:0;font-size:16px}
+.sub{color:var(--muted);margin:5px 0 0}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}
+.stat,.panel,.quote{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+.stat{padding:18px;display:flex;align-items:center;gap:14px}
+.stat-icon{width:43px;height:43px;border-radius:12px;background:var(--blue2);display:grid;place-items:center;color:var(--blue);font-size:20px;flex:0 0 auto}
+.stat span{display:block;color:var(--muted);font-size:12px}
+.stat strong{display:block;font-size:27px;line-height:1.2;margin-top:3px}
+.panel{padding:18px;margin-bottom:22px}
+.filters{display:grid;grid-template-columns:minmax(220px,1.6fr) minmax(160px,1fr) minmax(160px,1fr) auto;gap:10px;margin-top:14px}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:13px}
+.quote{padding:18px;min-width:0;transition:transform .15s,box-shadow .15s}
+.quote:hover{transform:translateY(-2px);box-shadow:0 12px 28px #18334d13}
+.quote-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
 .quote-id,.hint{font-size:12px;color:var(--muted)}
-.badge{display:inline-block;border-radius:20px;padding:5px 9px;font-size:12px;font-weight:bold;background:#eaf1f8;color:#36536d;margin-top:5px}
+.quote-id{font-weight:700;letter-spacing:.2px}
+.badge{display:inline-flex;align-items:center;border-radius:20px;padding:5px 9px;font-size:11px;font-weight:800;background:#eaf1f8;color:#36536d;margin:6px 5px 0 0}
 .badge.new{background:#fff0d7;color:#8a4b00}
 .badge.viewed{background:#dceafe;color:#1d4f91}
-.route{font-size:18px;font-weight:bold;margin:15px 0;overflow-wrap:anywhere}
+.badge.closed{background:#dcfce7;color:#166534}
+.route{font-size:18px;font-weight:800;margin:16px 0;overflow-wrap:anywhere;letter-spacing:-.2px}
 .route span{color:var(--blue);padding:0 5px}
 .info{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
-.info small{display:block;color:var(--muted);font-size:12px}
-.info strong{overflow-wrap:anywhere}
-.description{background:#f6f8fb;border-radius:8px;padding:12px;margin:12px 0;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}
-.actions{display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:13px}
-.actions button{font-size:12px}
-.empty{background:white;border:1px dashed #cbd5e1;border-radius:13px;padding:35px;text-align:center;color:var(--muted);grid-column:1/-1}
-footer{max-width:1200px;margin:auto;padding:10px 20px 25px;color:var(--muted);font-size:12px}
-.login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#0d2035,#173e61);display:flex;align-items:center;justify-content:center;padding:20px;z-index:100}
-.login-box{width:min(420px,100%);background:white;border-radius:16px;padding:26px;box-shadow:0 20px 60px #0004}
-.login-box h2{margin:18px 0 5px}
-.login-box label{display:block;font-size:13px;font-weight:bold;margin:13px 0 5px}
-.login-box button{width:100%;margin-top:17px}
-.login-error{display:none;color:#b42318;font-size:13px;margin-top:10px}
-.modal-backdrop{position:fixed;inset:0;background:#07162599;display:none;align-items:center;justify-content:center;padding:15px;z-index:10}
+.info small{display:block;color:var(--muted);font-size:11px;margin-bottom:2px}
+.info strong{display:block;font-size:13px;overflow-wrap:anywhere}
+.description{background:#f6f8fb;border:1px solid #edf1f6;border-radius:10px;padding:12px;margin:12px 0;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}
+.actions{display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:13px;margin-top:14px}
+.actions button{font-size:12px;padding:9px 11px}
+.empty{background:#fff;border:1px dashed #cbd5e1;border-radius:16px;padding:42px 20px;text-align:center;color:var(--muted);grid-column:1/-1}
+.empty strong{display:block;color:var(--text);font-size:16px;margin-bottom:5px}
+footer{max-width:1320px;margin:auto;padding:8px 22px 28px;color:var(--muted);font-size:12px}
+.login-screen{position:fixed;inset:0;background:radial-gradient(circle at top right,#25577c 0,transparent 38%),linear-gradient(135deg,#0d2035,#173e61);display:flex;align-items:center;justify-content:center;padding:20px;z-index:100}
+.login-box{width:min(430px,100%);background:#fff;border-radius:20px;padding:clamp(22px,5vw,32px);box-shadow:0 24px 80px #0004}
+.login-box h2{margin:24px 0 4px}
+.login-box label{display:block;font-size:13px;font-weight:800;margin:14px 0 6px}
+.login-box button{width:100%;margin-top:18px}
+.login-error{display:none;color:var(--red);font-size:13px;margin-top:10px}
+.login-note{background:#f3f7fb;border-radius:10px;padding:10px 12px;color:var(--muted);font-size:12px;margin-top:15px}
+.modal-backdrop{position:fixed;inset:0;background:#071625a8;display:none;align-items:center;justify-content:center;padding:15px;z-index:110}
 .modal-backdrop.open{display:flex}
-.modal{background:white;border-radius:15px;padding:22px;width:min(650px,100%);max-height:92vh;overflow:auto}
-.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal{background:#fff;border-radius:17px;padding:22px;width:min(680px,100%);max-height:92vh;overflow:auto;box-shadow:0 25px 80px #0003}
+.modal-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
 .form-grid .full{grid-column:1/-1}
-.form-grid label{display:block;font-size:13px;font-weight:bold;margin-bottom:5px}
-.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:17px}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#10243a;color:white;padding:12px 17px;border-radius:9px;display:none;z-index:200;max-width:90%}
-@media(max-width:800px){.stats{grid-template-columns:repeat(2,1fr)}.cards{grid-template-columns:1fr}.filters{grid-template-columns:1fr 1fr}}
-@media(max-width:520px){main{padding:0 12px}.filters,.form-grid{grid-template-columns:1fr}.form-grid .full{grid-column:auto}.stats{gap:8px}.stat{padding:12px}.info{grid-template-columns:1fr 1fr}}
+.form-grid label{display:block;font-size:12px;font-weight:800;margin-bottom:5px}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:18px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#10243a;color:#fff;padding:12px 17px;border-radius:11px;display:none;z-index:200;max-width:92%;box-shadow:0 8px 30px #0003}
+.toast.error{background:#8d2525}
+.spinner{display:inline-block;width:15px;height:15px;border:2px solid #ffffff80;border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:7px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hide{display:none!important}
+.connection{font-size:12px;padding:6px 10px;border-radius:20px;background:#ffffff18;color:#e5f0f8}
+@media(max-width:950px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.filters{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr}}
+@media(max-width:560px){header{padding:15px}.header-actions{width:100%;justify-content:space-between}main{padding:0 12px;margin:18px auto}.stats{gap:9px}.stat{padding:12px;gap:9px}.stat-icon{width:34px;height:34px;border-radius:10px;font-size:16px}.stat strong{font-size:23px}.stat span{font-size:11px}.filters,.form-grid{grid-template-columns:1fr}.form-grid .full{grid-column:auto}.panel,.quote{padding:14px}.info{grid-template-columns:1fr 1fr}.actions button{flex:1 1 auto}.topline>.primary{width:100%}.modal{padding:17px}.route{font-size:16px}}
 </style>
 </head>
 <body>
 
 <div class="login-screen" id="loginScreen">
 <form class="login-box" id="loginForm">
-<div class="brand"><div class="logo">MK</div><div><strong>MK Logística Express</strong><p>Acesso ao painel</p></div></div>
-<h2>Entrar</h2>
-<p>Faça login para consultar as cotações.</p>
-<label for="loginUser">Usuário</label>
-<input class="field" id="loginUser" autocomplete="username" required>
+<div class="brand"><div class="logo">MK</div><div><strong>MK Logística Express</strong><p style="margin:2px 0;color:#6b7a8d;font-size:13px">Acesso administrativo seguro</p></div></div>
+<h2>Bem-vinda(o)!</h2>
+<p class="sub">Entre com o e-mail e a senha cadastrados no Supabase.</p>
+<label for="loginEmail">E-mail</label>
+<input class="field" id="loginEmail" type="email" autocomplete="username" required placeholder="seuemail@exemplo.com">
 <label for="loginPass">Senha</label>
-<input class="field" id="loginPass" type="password" autocomplete="current-password" required>
-<button class="primary" type="submit">Entrar no painel</button>
-<div class="login-error" id="loginError">Usuário ou senha incorretos.</div>
-<p class="hint">Acesso de demonstração: admin / MK2026demo</p>
+<input class="field" id="loginPass" type="password" autocomplete="current-password" required placeholder="Sua senha">
+<button class="primary" id="loginBtn" type="submit">Entrar no painel</button>
+<div class="login-error" id="loginError"></div>
+<div class="login-note">O acesso é validado pelo Supabase. Use o e-mail e a senha do usuário que você criou em Authentication → Users.</div>
 </form>
 </div>
 
 <header>
-<div class="brand"><div class="logo">MK</div><div><h1>MK Logística Express</h1><p>Painel de cotações de frete</p></div></div>
-<div><span id="signedInLabel">Painel administrativo</span> <button class="outline" id="logoutBtn">Sair</button></div>
+<div class="brand"><div class="logo">MK</div><div><h1>MK Logística Express</h1><p>Painel de gestão de cotações</p></div></div>
+<div class="header-actions">
+<span class="connection" id="connectionState">Conectando ao banco…</span>
+<span class="signed" id="signedInLabel"></span>
+<button class="outline" id="logoutBtn">Sair</button>
+</div>
 </header>
 
-<main>
+<main id="mainPanel" class="hide">
 <div class="topline">
-<div><h2>Painel de cotações</h2><p>Consulte os pedidos e marque as cotações que você visualizou.</p></div>
-<button class="primary" id="newQuoteBtn">＋ Adicionar cotação</button>
+<div><h2>Painel de cotações</h2><p class="sub">Acompanhe solicitações, confira os dados e atualize cada etapa do frete.</p></div>
+<button class="primary" id="newQuoteBtn">＋ Nova cotação</button>
 </div>
 
 <section class="stats">
-<div class="stat"><span>Total de cotações</span><strong id="totalStat">0</strong></div>
-<div class="stat"><span>Novas</span><strong id="newStat">0</strong></div>
-<div class="stat"><span>Visualizadas</span><strong id="viewedStat">0</strong></div>
-<div class="stat"><span>Proposta enviada</span><strong id="sentStat">0</strong></div>
+<div class="stat"><div class="stat-icon">▤</div><div><span>Total de cotações</span><strong id="totalStat">0</strong></div></div>
+<div class="stat"><div class="stat-icon">◷</div><div><span>Novas</span><strong id="newStat">0</strong></div></div>
+<div class="stat"><div class="stat-icon">✓</div><div><span>Visualizadas</span><strong id="viewedStat">0</strong></div></div>
+<div class="stat"><div class="stat-icon">↗</div><div><span>Propostas enviadas</span><strong id="sentStat">0</strong></div></div>
 </section>
 
 <section class="panel">
-<div class="section-title"><h3>Buscar cotações</h3><button class="outline" id="exportBtn">Exportar CSV</button></div>
+<div class="section-title"><h3>Buscar e filtrar</h3><button class="outline" id="exportBtn">⇩ Exportar CSV</button></div>
 <div class="filters">
-<input class="field" id="search" placeholder="Buscar nome, telefone, origem ou destino">
+<input class="field" id="search" placeholder="Buscar nome, telefone, rota…">
 <select class="field" id="statusFilter">
 <option value="">Todos os status</option>
-<option>Nova cotação</option><option>Usuário confirmado</option><option>Proposta enviada</option><option>Fechado</option><option>Perdido</option>
+<option>Nova cotação</option>
+<option>Usuário confirmado</option>
+<option>Proposta enviada</option>
+<option>Fechado</option>
+<option>Perdido</option>
 </select>
 <select class="field" id="serviceFilter">
 <option value="">Todos os serviços</option>
-<option>Transporte de cargas</option><option>Transporte fracionado</option><option>Entregas urgentes</option><option>Mudança</option>
+<option>Transporte de cargas</option>
+<option>Transporte fracionado</option>
+<option>Entregas urgentes</option>
+<option>Mudança</option>
 </select>
 <button class="secondary" id="clearFilters">Limpar filtros</button>
 </div>
 </section>
 
 <div class="section-title"><h3>Solicitações recebidas</h3><span class="hint" id="resultCount"></span></div>
-<section class="cards" id="cards"></section>
+<section class="cards" id="cards"><div class="empty"><strong>Carregando cotações…</strong>Aguarde um instante.</div></section>
 </main>
 
-<footer>
-Esta versão guarda as cotações somente neste navegador. O login é demonstrativo, não protege dados reais contra acesso público. Para receber formulários do site e sincronizar dispositivos, conecte a um banco de dados com autenticação segura.
-</footer>
+<footer id="footerNote">Painel administrativo conectado ao Supabase. Os dados são sincronizados com o banco de dados.</footer>
 
 <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true">
 <div class="modal">
-<div class="modal-head"><h3 id="modalTitle">Adicionar cotação</h3><button class="outline" id="closeModal">Fechar ×</button></div>
+<div class="modal-head"><h3 id="modalTitle">Nova cotação</h3><button class="outline" id="closeModal">Fechar ×</button></div>
 <form id="quoteForm">
 <input type="hidden" id="quoteId">
 <div class="form-grid">
 <div><label for="origin">Origem *</label><input class="field" id="origin" required placeholder="Cidade/UF"></div>
 <div><label for="destination">Destino *</label><input class="field" id="destination" required placeholder="Cidade/UF"></div>
-<div><label for="name">Nome *</label><input class="field" id="name" required></div>
-<div><label for="phone">Telefone/Celular *</label><input class="field" id="phone" required type="tel"></div>
+<div><label for="name">Nome do cliente *</label><input class="field" id="name" required></div>
+<div><label for="phone">Telefone/Celular *</label><input class="field" id="phone" type="tel" required></div>
 <div class="full"><label for="email">E-mail (opcional)</label><input class="field" id="email" type="email"></div>
-<div class="full"><label for="service">Serviço *</label><select class="field" id="service" required><option value="">Selecione</option><option>Transporte de cargas</option><option>Transporte fracionado</option><option>Entregas urgentes</option><option>Mudança</option></select></div>
-<div class="full"><label for="details">Mais informações da carga *</label><textarea class="field" id="details" rows="4" required placeholder="Peso, quantidade, valor, móveis, caixas e outros detalhes"></textarea></div>
+<div class="full"><label for="service">Serviço *</label>
+<select class="field" id="service" required>
+<option value="">Selecione</option>
+<option>Transporte de cargas</option>
+<option>Transporte fracionado</option>
+<option>Entregas urgentes</option>
+<option>Mudança</option>
+</select></div>
+<div class="full"><label for="details">Mais informações da carga *</label><textarea class="field" id="details" rows="4" required placeholder="Peso, quantidade, valor declarado, móveis, caixas e outros detalhes"></textarea></div>
+<div class="full" id="statusWrap"><label for="editStatus">Status</label>
+<select class="field" id="editStatus">
+<option>Nova cotação</option>
+<option>Usuário confirmado</option>
+<option>Proposta enviada</option>
+<option>Fechado</option>
+<option>Perdido</option>
+</select></div>
 </div>
-<p class="hint">O botão de visualização registra a data em que você marcou a cotação como vista.</p>
-<div class="modal-actions"><button type="button" class="outline" id="cancelModal">Cancelar</button><button type="submit" class="primary">Salvar cotação</button></div>
+<div class="modal-actions"><button type="button" class="outline" id="cancelModal">Cancelar</button><button type="submit" class="primary" id="saveQuoteBtn">Salvar cotação</button></div>
 </form>
 </div>
 </div>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
-const STORAGE_KEY='mk_logistica_cotacoes_v2';
-const DEMO_USER='admin';
-const DEMO_PASS='MK2026demo';
-const AUTH_KEY='mk_logistica_logged_in';
-const demoQuotes=[
-{id:'MK-1001',origin:'São Paulo, SP',destination:'Belo Horizonte, MG',name:'Cliente demonstração',phone:'5511999999999',email:'cliente@example.com',service:'Mudança',details:'Exemplo: 15 caixas, sofá, cama e guarda-roupa. Apague esta cotação de demonstração.',status:'Nova cotação',createdAt:new Date().toISOString(),viewedAt:null,confirmedAt:null},
-{id:'MK-1002',origin:'Campinas, SP',destination:'Curitiba, PR',name:'Empresa exemplo',phone:'5511988887777',email:'',service:'Transporte fracionado',details:'Exemplo: 8 volumes; peso e valor a confirmar.',status:'Usuário confirmado',createdAt:new Date(Date.now()-86400000).toISOString(),viewedAt:new Date().toISOString(),confirmedAt:new Date().toISOString()}
-];
-let quotes=[];
-try{const saved=localStorage.getItem(STORAGE_KEY);quotes=saved?JSON.parse(saved):demoQuotes;if(!saved)localStorage.setItem(STORAGE_KEY,JSON.stringify(quotes));}catch(e){quotes=demoQuotes}
-const $=id=>document.getElementById(id);
-function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function formatDate(d){try{return new Intl.DateTimeFormat('pt-BR',{dateStyle:'short',timeStyle:'short'}).format(new Date(d))}catch{return '—'}}
-function toast(msg){$('toast').textContent=msg;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',2500)}
-function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(quotes));render()}
-function showPanel(){$('loginScreen').style.display='none';$('signedInLabel').textContent='Conectado: admin'}
-function showLogin(){$('loginScreen').style.display='flex'}
-if(sessionStorage.getItem(AUTH_KEY)==='yes')showPanel();else showLogin();
+const SUPABASE_URL = 'https://xrzodoyhbdjlckowepul.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_-gRHGelaMM_yNidyMFWpcQ_FyyLeWok';
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-$('loginForm').addEventListener('submit',e=>{
-e.preventDefault();
-if($('loginUser').value.trim()===DEMO_USER&&$('loginPass').value===DEMO_PASS){
-sessionStorage.setItem(AUTH_KEY,'yes');$('loginError').style.display='none';showPanel();toast('Login realizado.');
-}else{$('loginError').style.display='block'}
+const STATUSES = ['Nova cotação','Usuário confirmado','Proposta enviada','Fechado','Perdido'];
+let quotes = [];
+let currentUser = null;
+let profiles = null;
+let busy = false;
+
+const $ = id => document.getElementById(id);
+
+function esc(v) {
+  return String(v ?? '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+function formatDate(d) {
+  if (!d) return '—';
+  try {
+    return new Intl.DateTimeFormat('pt-BR',{dateStyle:'short',timeStyle:'short'}).format(new Date(d));
+  } catch { return '—'; }
+}
+
+function toast(msg,error=false) {
+  $('toast').textContent=msg;
+  $('toast').classList.toggle('error',error);
+  $('toast').style.display='block';
+  clearTimeout(window.toastTimer);
+  window.toastTimer=setTimeout(()=>$('toast').style.display='none',3200);
+}
+
+function setBusy(button,on,label) {
+  if (!button) return;
+  button.disabled=on;
+  if (on) {
+    button.dataset.old=button.textContent;
+    button.innerHTML='<span class="spinner"></span>'+(label||'Aguarde…');
+  } else if (button.dataset.old) {
+    button.textContent=button.dataset.old;
+    delete button.dataset.old;
+  }
+}
+
+function showLogin(message='') {
+  $('loginScreen').style.display='flex';
+  $('mainPanel').classList.add('hide');
+  $('loginError').textContent=message;
+  $('loginError').style.display=message?'block':'none';
+}
+
+function showPanel() {
+  $('loginScreen').style.display='none';
+  $('mainPanel').classList.remove('hide');
+  $('signedInLabel').textContent=currentUser?.email||'';
+}
+
+function mapQuote(row) {
+  return {
+    dbId:row.id,
+    id:row.codigo,
+    origin:row.origem,
+    destination:row.destino,
+    name:row.nome,
+    phone:row.telefone,
+    email:row.email||'',
+    service:row.servico,
+    details:row.detalhes,
+    status:row.status,
+    createdAt:row.criado_em,
+    updatedAt:row.atualizado_em,
+    viewedAt:row.my_viewed_at||null
+  };
+}
+
+async function checkProfile() {
+  const {data,error}=await db.from('perfis').select('id,nome,ativo').eq('id',currentUser.id).maybeSingle();
+  if (error) throw error;
+  if (!data||!data.ativo) throw new Error('Seu usuário não está autorizado. Confira se o UUID foi cadastrado na tabela perfis e se ativo está true.');
+  profiles=data;
+}
+
+async function loadQuotes() {
+  const [
+    {data:rows,error},
+    {data:views,error:viewErr}
+  ]=await Promise.all([
+    db.from('cotacoes').select('*').order('criado_em',{ascending:false}),
+    db.from('visualizacoes_cotacoes').select('cotacao_id,visualizada_em').eq('usuario_id',currentUser.id)
+  ]);
+  if (error) throw error;
+  if (viewErr) throw viewErr;
+  const viewMap=new Map((views||[]).map(v=>[v.cotacao_id,v.visualizada_em]));
+  quotes=(rows||[]).map(r=>mapQuote({...r,my_viewed_at:viewMap.get(r.id)||null}));
+  render();
+}
+
+async function refresh() {
+  try {
+    await loadQuotes();
+    $('connectionState').textContent='● Banco conectado';
+    $('connectionState').style.color='#c8f7d8';
+  } catch(e) {
+    console.error(e);
+    $('connectionState').textContent='Falha ao carregar';
+    toast('Não foi possível carregar as cotações: '+(e.message||'verifique as permissões RLS'),true);
+  }
+}
+
+async function initSession() {
+  try {
+    const {data,error}=await db.auth.getSession();
+    if (error) throw error;
+    if (data.session) {
+      currentUser=data.session.user;
+      await checkProfile();
+      showPanel();
+      await refresh();
+    } else showLogin();
+  } catch(e) {
+    showLogin(e.message||'Não foi possível validar o acesso.');
+  }
+}
+
+$('loginForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const btn=$('loginBtn');
+  setBusy(btn,true,'Validando acesso…');
+  $('loginError').style.display='none';
+  try {
+    const {data,error}=await db.auth.signInWithPassword({
+      email:$('loginEmail').value.trim(),
+      password:$('loginPass').value
+    });
+    if (error) throw error;
+    currentUser=data.user;
+    await checkProfile();
+    showPanel();
+    await refresh();
+    toast('Login realizado com sucesso.');
+  } catch(err) {
+    console.error(err);
+    $('loginError').textContent=err.message||'Não foi possível entrar.';
+    $('loginError').style.display='block';
+    if (currentUser) {
+      await db.auth.signOut();
+      currentUser=null;
+    }
+  } finally {
+    setBusy(btn,false);
+  }
 });
-$('logoutBtn').onclick=()=>{sessionStorage.removeItem(AUTH_KEY);$('loginPass').value='';showLogin()};
 
-function render(){
-$('totalStat').textContent=quotes.length;
-$('newStat').textContent=quotes.filter(q=>q.status==='Nova cotação').length;
-$('viewedStat').textContent=quotes.filter(q=>q.viewedAt).length;
-$('sentStat').textContent=quotes.filter(q=>q.status==='Proposta enviada').length;
-const term=$('search').value.toLocaleLowerCase('pt-BR'),status=$('statusFilter').value,service=$('serviceFilter').value;
-const list=quotes.filter(q=>(!status||q.status===status)&&(!service||q.service===service)&&[q.id,q.origin,q.destination,q.name,q.phone,q.email,q.service,q.details].join(' ').toLocaleLowerCase('pt-BR').includes(term));
-$('resultCount').textContent=list.length+' resultado(s)';
-$('cards').innerHTML=list.length?list.map(q=>`<article class="quote">
-<div class="quote-top"><div><div class="quote-id">${esc(q.id)} · ${esc(formatDate(q.createdAt))}</div><span class="badge ${q.status==='Nova cotação'?'new':''}">${esc(q.status)}</span>${q.viewedAt?'<span class="badge viewed">Cotação visualizada</span>':''}</div><button class="outline" data-action="edit" data-id="${esc(q.id)}">Editar</button></div>
-<div class="route">${esc(q.origin)} <span>→</span> ${esc(q.destination)}</div>
-<div class="info"><div><small>Nome do cliente</small><strong>${esc(q.name)}</strong></div><div><small>Telefone/Celular</small><strong>${esc(q.phone)}</strong></div><div><small>E-mail</small><strong>${esc(q.email||'Não informado')}</strong></div><div><small>Serviço</small><strong>${esc(q.service)}</strong></div></div>
-<div class="description"><strong>Informações da carga</strong><br>${esc(q.details)}</div>
-${q.viewedAt?`<p class="hint">Visualizada em ${esc(formatDate(q.viewedAt))}</p>`:''}
-${q.confirmedAt?`<p class="hint">Dados do usuário conferidos em ${esc(formatDate(q.confirmedAt))}</p>`:''}
-<div class="actions">
-${!q.viewedAt?`<button class="success" data-action="viewed" data-id="${esc(q.id)}">✓ Confirmar que vi a cotação</button>`:`<button class="secondary" data-action="unviewed" data-id="${esc(q.id)}">Marcar como não vista</button>`}
-${q.status!=='Usuário confirmado'?`<button class="outline" data-action="confirm" data-id="${esc(q.id)}">Conferir dados do usuário</button>`:`<button class="secondary" data-action="unconfirm" data-id="${esc(q.id)}">Desfazer conferência</button>`}
-<button class="secondary" data-action="whatsapp" data-id="${esc(q.id)}">Abrir WhatsApp</button>
-<button class="outline" data-action="status" data-id="${esc(q.id)}">Alterar status</button>
-<button class="danger" data-action="delete" data-id="${esc(q.id)}">Excluir</button>
-</div></article>`).join(''):'<div class="empty">Nenhuma cotação encontrada.</div>';
+$('logoutBtn').onclick=async()=>{
+  await db.auth.signOut();
+  currentUser=null;
+  quotes=[];
+  showLogin();
+  $('loginPass').value='';
+  $('connectionState').textContent='Sessão encerrada';
+};
+
+db.auth.onAuthStateChange(async(event,session)=>{
+  if (event==='SIGNED_OUT') {
+    currentUser=null;
+    quotes=[];
+    showLogin();
+  } else if (event==='SIGNED_IN'&&session&&!currentUser) {
+    currentUser=session.user;
+    try {
+      await checkProfile();
+      showPanel();
+      await refresh();
+    } catch(e) {
+      await db.auth.signOut();
+      showLogin(e.message);
+    }
+  }
+});
+
+function render() {
+  $('totalStat').textContent=quotes.length;
+  $('newStat').textContent=quotes.filter(q=>q.status==='Nova cotação').length;
+  $('viewedStat').textContent=quotes.filter(q=>q.viewedAt).length;
+  $('sentStat').textContent=quotes.filter(q=>q.status==='Proposta enviada').length;
+
+  const term=$('search').value.toLocaleLowerCase('pt-BR');
+  const status=$('statusFilter').value;
+  const service=$('serviceFilter').value;
+
+  const list=quotes.filter(q=>
+    (!status||q.status===status)&&
+    (!service||q.service===service)&&
+    [q.id,q.origin,q.destination,q.name,q.phone,q.email,q.service,q.details]
+      .join(' ').toLocaleLowerCase('pt-BR').includes(term)
+  );
+
+  $('resultCount').textContent=list.length+' resultado(s)';
+
+  $('cards').innerHTML=list.length?list.map(q=>`
+    <article class="quote">
+      <div class="quote-top">
+        <div>
+          <div class="quote-id">${esc(q.id)} · ${esc(formatDate(q.createdAt))}</div>
+          <span class="badge ${q.status==='Nova cotação'?'new':q.status==='Fechado'?'closed':''}">${esc(q.status)}</span>
+          ${q.viewedAt?'<span class="badge viewed">Visualizada</span>':''}
+        </div>
+        <button class="outline" data-action="edit" data-id="${esc(q.dbId)}">Editar</button>
+      </div>
+      <div class="route">${esc(q.origin)} <span>→</span> ${esc(q.destination)}</div>
+      <div class="info">
+        <div><small>Nome do cliente</small><strong>${esc(q.name)}</strong></div>
+        <div><small>Telefone/Celular</small><strong>${esc(q.phone)}</strong></div>
+        <div><small>E-mail</small><strong>${esc(q.email||'Não informado')}</strong></div>
+        <div><small>Serviço</small><strong>${esc(q.service)}</strong></div>
+      </div>
+      <div class="description"><strong>Informações da carga</strong><br>${esc(q.details)}</div>
+      ${q.viewedAt?`<p class="hint">Visualizada em ${esc(formatDate(q.viewedAt))}</p>`:''}
+      <div class="actions">
+        ${!q.viewedAt?`<button class="success" data-action="viewed" data-id="${esc(q.dbId)}">✓ Confirmar que vi</button>`:`<button class="secondary" data-action="unviewed" data-id="${esc(q.dbId)}">Marcar não vista</button>`}
+        <button class="secondary" data-action="whatsapp" data-id="${esc(q.dbId)}">Abrir WhatsApp</button>
+        <button class="outline" data-action="status" data-id="${esc(q.dbId)}">Alterar status</button>
+        <button class="danger" data-action="delete" data-id="${esc(q.dbId)}">Excluir</button>
+      </div>
+    </article>
+  `).join(''):'<div class="empty"><strong>Nenhuma cotação encontrada</strong>Quando houver pedidos no banco, eles aparecerão aqui. Você também pode adicionar uma cotação manualmente.</div>';
 }
-function openModal(q){
-$('quoteForm').reset();$('quoteId').value=q?.id||'';$('modalTitle').textContent=q?'Editar cotação':'Adicionar cotação';
-['origin','destination','name','phone','email','service','details'].forEach(k=>$(k).value=q?.[k]||'');
-$('modalBackdrop').classList.add('open')
+
+function openModal(q) {
+  $('quoteForm').reset();
+  $('quoteId').value=q?.dbId||'';
+  $('modalTitle').textContent=q?'Editar cotação':'Nova cotação';
+  ['origin','destination','name','phone','email','service','details'].forEach(k=>$(k).value=q?.[k]||'');
+  $('editStatus').value=q?.status||'Nova cotação';
+  $('statusWrap').classList.toggle('hide',!q);
+  $('modalBackdrop').classList.add('open');
 }
-function closeModal(){$('modalBackdrop').classList.remove('open')}
+
+function closeModal() {
+  $('modalBackdrop').classList.remove('open');
+}
+
 $('newQuoteBtn').onclick=()=>openModal();
 $('closeModal').onclick=closeModal;
 $('cancelModal').onclick=closeModal;
-$('modalBackdrop').addEventListener('click',e=>{if(e.target===$('modalBackdrop'))closeModal()});
-
-$('quoteForm').addEventListener('submit',e=>{
-e.preventDefault();
-const id=$('quoteId').value,old=quotes.find(q=>q.id===id);
-const q={id:id||'MK-'+String(Date.now()).slice(-6),origin:$('origin').value.trim(),destination:$('destination').value.trim(),name:$('name').value.trim(),phone:$('phone').value.trim(),email:$('email').value.trim(),service:$('service').value,details:$('details').value.trim(),status:old?.status||'Nova cotação',createdAt:old?.createdAt||new Date().toISOString(),viewedAt:old?.viewedAt||null,confirmedAt:old?.confirmedAt||null};
-quotes=old?quotes.map(x=>x.id===id?q:x):[q,...quotes];save();closeModal();toast(old?'Cotação atualizada.':'Cotação adicionada.');
+$('modalBackdrop').addEventListener('click',e=>{
+  if (e.target===$('modalBackdrop')) closeModal();
 });
 
-$('cards').addEventListener('click',e=>{
-const b=e.target.closest('button[data-action]');if(!b)return;
-const q=quotes.find(x=>x.id===b.dataset.id);if(!q)return;
-switch(b.dataset.action){
-case'edit':openModal(q);break;
-case'viewed':q.viewedAt=new Date().toISOString();save();toast('Cotação marcada como visualizada.');break;
-case'unviewed':q.viewedAt=null;save();toast('Cotação marcada como não vista.');break;
-case'confirm':q.status='Usuário confirmado';q.confirmedAt=new Date().toISOString();save();toast('Dados do usuário conferidos.');break;
-case'unconfirm':q.status='Nova cotação';q.confirmedAt=null;save();toast('Conferência desfeita.');break;
-case'whatsapp':{const digits=q.phone.replace(/\D/g,'');if(!digits){toast('Telefone não informado.');break}const msg=`Olá, ${q.name}! Aqui é da MK Logística Express. Recebemos sua solicitação de ${q.service}, de ${q.origin} para ${q.destination}. Gostaríamos de confirmar os detalhes da carga: ${q.details}`;window.open('https://wa.me/'+digits+'?text='+encodeURIComponent(msg),'_blank');break}
-case'status':{const opts=['Nova cotação','Usuário confirmado','Proposta enviada','Fechado','Perdido'];const n=prompt('Digite exatamente um status:\n'+opts.join('\n'),q.status);if(n&&opts.includes(n)){q.status=n;if(n==='Usuário confirmado'&&!q.confirmedAt)q.confirmedAt=new Date().toISOString();if(n!=='Usuário confirmado')q.confirmedAt=null;save();toast('Status atualizado.')}else if(n)toast('Status inválido.');break}
-case'delete':if(confirm('Excluir a cotação '+q.id+' de '+q.name+'?')){quotes=quotes.filter(x=>x.id!==q.id);save();toast('Cotação excluída.')}break
-}
+$('quoteForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  if (busy) return;
+  busy=true;
+  const btn=$('saveQuoteBtn');
+  setBusy(btn,true,'Salvando…');
+
+  const id=$('quoteId').value;
+  const old=quotes.find(q=>q.dbId===id);
+  const payload={
+    origem:$('origin').value.trim(),
+    destino:$('destination').value.trim(),
+    nome:$('name').value.trim(),
+    telefone:$('phone').value.trim(),
+    email:$('email').value.trim()||null,
+    servico:$('service').value,
+    detalhes:$('details').value.trim(),
+    status:old?$('editStatus').value:'Nova cotação',
+    atualizado_em:new Date().toISOString()
+  };
+
+  try {
+    let result;
+    if (old) {
+      result=await db.from('cotacoes').update(payload).eq('id',id).select().single();
+    } else {
+      payload.criado_por=currentUser.id;
+      result=await db.from('cotacoes').insert(payload).select().single();
+    }
+    if (result.error) throw result.error;
+    closeModal();
+    await refresh();
+    toast(old?'Cotação atualizada no banco.':'Cotação salva no banco.');
+  } catch(err) {
+    console.error(err);
+    toast('Erro ao salvar: '+(err.message||'verifique as políticas RLS'),true);
+  } finally {
+    busy=false;
+    setBusy(btn,false);
+  }
 });
-['search','statusFilter','serviceFilter'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',render));
-$('clearFilters').onclick=()=>{$('search').value='';$('statusFilter').value='';$('serviceFilter').value='';render()};
-$('exportBtn').onclick=()=>{
-const cols=['id','createdAt','origin','destination','name','phone','email','service','details','status','viewedAt','confirmedAt'];
-const csv=[cols.join(';'),...quotes.map(q=>cols.map(k=>'"'+String(q[k]??'').replace(/"/g,'""')+'"').join(';'))].join('\r\n');
-const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}));a.download='cotacoes-mk-logistica.csv';a.click();URL.revokeObjectURL(a.href)
+
+$('cards').addEventListener('click',async e=>{
+  const b=e.target.closest('button[data-action]');
+  if (!b) return;
+  const q=quotes.find(x=>x.dbId===b.dataset.id);
+  if (!q) return;
+  const action=b.dataset.action;
+
+  try {
+    if (action==='edit') {
+      openModal(q);
+      return;
+    }
+
+    if (action==='whatsapp') {
+      const digits=q.phone.replace(/\D/g,'');
+      if (!digits) {
+        toast('Telefone não informado.',true);
+        return;
+      }
+      const msg=`Olá, ${q.name}! Aqui é da MK Logística Express. Recebemos sua solicitação de ${q.service}, de ${q.origin} para ${q.destination}. Gostaríamos de confirmar os detalhes da carga: ${q.details}`;
+      window.open('https://wa.me/'+digits+'?text='+encodeURIComponent(msg),'_blank','noopener');
+      return;
+    }
+
+    if (action==='viewed') {
+      const {error}=await db.from('visualizacoes_cotacoes').upsert({
+        cotacao_id:q.dbId,
+        usuario_id:currentUser.id,
+        visualizada_em:new Date().toISOString()
+      },{onConflict:'cotacao_id,usuario_id'});
+      if (error) throw error;
+      await refresh();
+      toast('Visualização registrada.');
+      return;
+    }
+
+    if (action==='unviewed') {
+      const {error}=await db.from('visualizacoes_cotacoes')
+        .delete().eq('cotacao_id',q.dbId).eq('usuario_id',currentUser.id);
+      if (error) throw error;
+      await refresh();
+      toast('Cotação marcada como não vista.');
+      return;
+    }
+
+    if (action==='status') {
+      const n=prompt('Digite exatamente um status:\n'+STATUSES.join('\n'),q.status);
+      if (!n) return;
+      if (!STATUSES.includes(n)) {
+        toast('Status inválido.',true);
+        return;
+      }
+      const {error}=await db.from('cotacoes')
+        .update({status:n,atualizado_em:new Date().toISOString()}).eq('id',q.dbId);
+      if (error) throw error;
+      await refresh();
+      toast('Status atualizado.');
+      return;
+    }
+
+    if (action==='delete') {
+      if (!confirm('Excluir a cotação '+q.id+' de '+q.name+'? Esta ação não pode ser desfeita.')) return;
+      const {error}=await db.from('cotacoes').delete().eq('id',q.dbId);
+      if (error) throw error;
+      await refresh();
+      toast('Cotação excluída do banco.');
+    }
+  } catch(err) {
+    console.error(err);
+    toast('Não foi possível concluir: '+(err.message||'verifique as permissões do banco'),true);
+  }
+});
+
+['search','statusFilter','serviceFilter'].forEach(id=>{
+  $(id).addEventListener(id==='search'?'input':'change',render);
+});
+
+$('clearFilters').onclick=()=>{
+  $('search').value='';
+  $('statusFilter').value='';
+  $('serviceFilter').value='';
+  render();
 };
-render();
+
+$('exportBtn').onclick=()=>{
+  const cols=['id','createdAt','origin','destination','name','phone','email','service','details','status','viewedAt'];
+  const csv=[
+    cols.join(';'),
+    ...quotes.map(q=>cols.map(k=>'"'+String(q[k]??'').replace(/"/g,'""')+'"').join(';'))
+  ].join('\r\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}));
+  a.download='cotacoes-mk-logistica.csv';
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+
+$('connectionState').textContent='Supabase configurado';
+initSession();
 </script>
 </body>
 </html>
