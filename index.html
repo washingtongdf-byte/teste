@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -7,299 +6,588 @@
 <title>Painel de Cotações | MK Logística Express</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--navy:#06172a;--navy2:#0b2b49;--blue:#1677d2;--orange:#f59e0b;--green:#16a34a;--red:#b42318;--bg:#071a2d;--card:#0d2741;--line:#25445f;--text:#eaf2fb;--muted:#a9bfd3}
+:root{--navy:#10243a;--navy2:#183c5c;--blue:#1769aa;--blue2:#eaf3fc;--orange:#f59e0b;--bg:#f3f6fa;--text:#172536;--muted:#6b7a8d;--line:#e1e8f0;--green:#14804a;--red:#b42318;--shadow:0 8px 24px #18334d0b}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 Arial, sans-serif}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif}
 button,input,select,textarea{font:inherit}
-button{border:0;border-radius:9px;padding:10px 13px;font-weight:700;cursor:pointer}
-button:disabled{opacity:.6;cursor:wait}
-.primary{background:var(--blue);color:white}.green{background:var(--green);color:white}.orange{background:var(--orange);color:#182333}.red{background:var(--red);color:white}.dark{background:#173650;color:white;border:1px solid #365b78}
-input,select,textarea{width:100%;padding:11px;border-radius:9px;border:1px solid #2c4b67;background:#081e33;color:white}
-label{display:block;font-size:13px;font-weight:bold;margin-bottom:5px}
-header{padding:18px clamp(15px,4vw,40px);background:linear-gradient(120deg,var(--navy),var(--navy2));display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;border-bottom:3px solid var(--orange)}
-.brand{display:flex;align-items:center;gap:12px}.logo{width:48px;height:48px;display:grid;place-items:center;background:white;color:var(--navy);font-weight:900;font-size:20px;border-radius:12px;border-bottom:4px solid var(--orange)}
-h1{font-size:20px;margin:0}header p{margin:3px 0 0;color:#d4e1ed;font-size:13px}
-main{max-width:1400px;margin:25px auto;padding:0 18px}
-.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
-h2{margin:0;font-size:26px}h3{margin:0 0 12px;font-size:17px}
-.muted{color:var(--muted);font-size:13px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:18px}
-.card,.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:17px}
-.stat span{display:block;color:var(--muted);font-size:12px}.stat strong{font-size:28px}
-.filters{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px}
-.list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin-top:17px}
-.quote{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:17px;min-width:0}
-.quotehead{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.badge{display:inline-block;padding:4px 9px;border-radius:20px;background:#173d60;color:#dbeafe;font-size:11px;font-weight:bold}
-.route{font-size:18px;font-weight:bold;margin:15px 0;overflow-wrap:anywhere}.route span{color:#65b5ff}
-.details{background:#102f4c;padding:12px;border-radius:9px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;margin-top:10px}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:13px;border-top:1px solid var(--line)}
-.actions button{font-size:12px;flex:1 1 auto}
-.empty{padding:35px;text-align:center;border:1px dashed #365b78;border-radius:12px;color:var(--muted);grid-column:1/-1}
-.login{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;padding:18px;background:linear-gradient(135deg,#06172a,#17476b)}
-.loginbox{background:var(--card);border:1px solid #365b78;border-radius:18px;padding:28px;width:min(420px,100%)}
-.loginbox label{margin-top:14px}.loginbox button{width:100%;margin-top:17px}
-.modalbg{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:15px;z-index:20}
-.modalbg.open{display:flex}.modal{width:min(700px,100%);max-height:92vh;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:15px;padding:22px}
-.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.full{grid-column:1/-1}
-.modalfoot{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:18px}
-.toast{display:none;position:fixed;z-index:30;bottom:20px;left:50%;transform:translateX(-50%);background:#123d5e;color:white;padding:12px 18px;border-radius:10px;max-width:92%}
-.toast.error{background:#8f1b13}
+button{cursor:pointer;border:0;border-radius:10px;padding:10px 14px;font-weight:700}
+button:disabled{opacity:.55;cursor:wait}
+.primary{background:var(--blue);color:#fff}
+.primary:hover{background:#12578e}
+.secondary{background:#eaf1f8;color:#193d5e}
+.success{background:#e1f5e9;color:#126b3c}
+.danger{background:#fff0f0;color:#a12828}
+.outline{background:#fff;border:1px solid var(--line);color:var(--text)}
+.field{width:100%;padding:12px 13px;border:1px solid #d5dee8;border-radius:10px;background:#fff;color:var(--text);outline:none}
+.field:focus{border-color:#5b9bd5;box-shadow:0 0 0 3px #1769aa1a}
+header{background:linear-gradient(120deg,var(--navy),var(--navy2));color:#fff;padding:18px clamp(16px,4vw,42px);display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;box-shadow:0 4px 18px #10243a20}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:46px;height:46px;flex:0 0 46px;border-radius:13px;background:#fff;color:var(--navy);display:grid;place-items:center;font-weight:950;font-size:18px;box-shadow:inset 0 -4px 0 var(--orange)}
+h1{font-size:19px;margin:0;letter-spacing:.1px}
+header p{margin:2px 0;color:#d4e1ed;font-size:13px}
+.header-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.signed{font-size:13px;color:#d4e1ed}
+main{max-width:1320px;margin:28px auto;padding:0 22px}
+.topline,.section-title{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.topline{margin-bottom:22px}
+h2{margin:0;font-size:clamp(23px,3vw,30px);letter-spacing:-.5px}
+h3{margin:0;font-size:16px}
+.sub{color:var(--muted);margin:5px 0 0}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}
+.stat,.panel,.quote{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+.stat{padding:18px;display:flex;align-items:center;gap:14px}
+.stat-icon{width:43px;height:43px;border-radius:12px;background:var(--blue2);display:grid;place-items:center;color:var(--blue);font-size:20px;flex:0 0 auto}
+.stat span{display:block;color:var(--muted);font-size:12px}
+.stat strong{display:block;font-size:27px;line-height:1.2;margin-top:3px}
+.panel{padding:18px;margin-bottom:22px}
+.filters{display:grid;grid-template-columns:minmax(220px,1.6fr) minmax(160px,1fr) minmax(160px,1fr) auto;gap:10px;margin-top:14px}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:13px}
+.quote{padding:18px;min-width:0;transition:transform .15s,box-shadow .15s}
+.quote:hover{transform:translateY(-2px);box-shadow:0 12px 28px #18334d13}
+.quote-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.quote-id,.hint{font-size:12px;color:var(--muted)}
+.quote-id{font-weight:700;letter-spacing:.2px}
+.badge{display:inline-flex;align-items:center;border-radius:20px;padding:5px 9px;font-size:11px;font-weight:800;background:#eaf1f8;color:#36536d;margin:6px 5px 0 0}
+.badge.new{background:#fff0d7;color:#8a4b00}
+.badge.viewed{background:#dceafe;color:#1d4f91}
+.badge.closed{background:#dcfce7;color:#166534}
+.route{font-size:18px;font-weight:800;margin:16px 0;overflow-wrap:anywhere;letter-spacing:-.2px}
+.route span{color:var(--blue);padding:0 5px}
+.info{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.info small{display:block;color:var(--muted);font-size:11px;margin-bottom:2px}
+.info strong{display:block;font-size:13px;overflow-wrap:anywhere}
+.description{background:#f6f8fb;border:1px solid #edf1f6;border-radius:10px;padding:12px;margin:12px 0;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}
+.actions{display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:13px;margin-top:14px}
+.actions button{font-size:12px;padding:9px 11px}
+.empty{background:#fff;border:1px dashed #cbd5e1;border-radius:16px;padding:42px 20px;text-align:center;color:var(--muted);grid-column:1/-1}
+.empty strong{display:block;color:var(--text);font-size:16px;margin-bottom:5px}
+footer{max-width:1320px;margin:auto;padding:8px 22px 28px;color:var(--muted);font-size:12px}
+.login-screen{position:fixed;inset:0;background:radial-gradient(circle at top right,#25577c 0,transparent 38%),linear-gradient(135deg,#0d2035,#173e61);display:flex;align-items:center;justify-content:center;padding:20px;z-index:100}
+.login-box{width:min(430px,100%);background:#fff;border-radius:20px;padding:clamp(22px,5vw,32px);box-shadow:0 24px 80px #0004}
+.login-box h2{margin:24px 0 4px}
+.login-box label{display:block;font-size:13px;font-weight:800;margin:14px 0 6px}
+.login-box button{width:100%;margin-top:18px}
+.login-error{display:none;color:var(--red);font-size:13px;margin-top:10px}
+.login-note{background:#f3f7fb;border-radius:10px;padding:10px 12px;color:var(--muted);font-size:12px;margin-top:15px}
+.modal-backdrop{position:fixed;inset:0;background:#071625a8;display:none;align-items:center;justify-content:center;padding:15px;z-index:110}
+.modal-backdrop.open{display:flex}
+.modal{background:#fff;border-radius:17px;padding:22px;width:min(680px,100%);max-height:92vh;overflow:auto;box-shadow:0 25px 80px #0003}
+.modal-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.form-grid .full{grid-column:1/-1}
+.form-grid label{display:block;font-size:12px;font-weight:800;margin-bottom:5px}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:18px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#10243a;color:#fff;padding:12px 17px;border-radius:11px;display:none;z-index:200;max-width:92%;box-shadow:0 8px 30px #0003}
+.toast.error{background:#8d2525}
+.spinner{display:inline-block;width:15px;height:15px;border:2px solid #ffffff80;border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:7px}
+@keyframes spin{to{transform:rotate(360deg)}}
 .hide{display:none!important}
-footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
-@media(max-width:850px){.stats{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr 1fr}.list{grid-template-columns:1fr}}
-@media(max-width:520px){main{padding:0 11px}.stats{gap:8px}.stat,.card{padding:12px}.stat strong{font-size:23px}.filters,.formgrid{grid-template-columns:1fr}.full{grid-column:auto}.actions button{flex:1 1 45%}h2{font-size:22px}.modal{padding:15px}}
+.connection{font-size:12px;padding:6px 10px;border-radius:20px;background:#ffffff18;color:#e5f0f8}
+@media(max-width:950px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.filters{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr}}
+@media(max-width:560px){header{padding:15px}.header-actions{width:100%;justify-content:space-between}main{padding:0 12px;margin:18px auto}.stats{gap:9px}.stat{padding:12px;gap:9px}.stat-icon{width:34px;height:34px;border-radius:10px;font-size:16px}.stat strong{font-size:23px}.stat span{font-size:11px}.filters,.form-grid{grid-template-columns:1fr}.form-grid .full{grid-column:auto}.panel,.quote{padding:14px}.info{grid-template-columns:1fr 1fr}.actions button{flex:1 1 auto}.topline>.primary{width:100%}.modal{padding:17px}.route{font-size:16px}}
+/* TEMA MK: AZUL-ESCURO COM AÇÕES VERDE, AZUL E LARANJA */
+:root{--navy:#06172a;--navy2:#0b2b49;--blue:#1677d2;--blue2:#183d60;--orange:#f59e0b;--bg:#071a2d;--text:#eaf2fb;--muted:#a9bfd3;--line:#25445f;--green:#16a34a;--shadow:0 8px 24px #0003}
+body{background:var(--bg);color:var(--text)}
+.stat,.panel,.quote,.modal,.login-box{background:#0d2741;border-color:#244663;color:#eaf2fb}
+.stat span,.sub,.hint,.quote-id,.info small,footer{color:#a9bfd3}
+.stat-icon{background:#173b5d;color:#70b7ff}
+.field{background:#081e33;color:#eef6ff;border-color:#2c4b67}
+.field::placeholder{color:#8ca7bf}
+.field:focus{border-color:#4da3ff;box-shadow:0 0 0 3px #1677d233}
+.primary{background:#1677d2;color:#fff}.primary:hover{background:#0f63b2}
+.secondary{background:#f59e0b;color:#1d2939}.secondary:hover{background:#d98505;color:#fff}
+.success{background:#16a34a;color:#fff}.success:hover{background:#12803a}
+.danger{background:#b42318;color:#fff}.danger:hover{background:#8f1b13}
+.outline{background:#173650;border:1px solid #365b78;color:#eef6ff}.outline:hover{background:#214967}
+.badge{background:#1b3b57;color:#dbeafe}.badge.new{background:#6b4209;color:#ffdf9b}.badge.viewed{background:#183f70;color:#bfdbfe}.badge.closed{background:#14532d;color:#bbf7d0}
+.description,.login-note{background:#102f4c;border-color:#254863;color:#dceafa}
+.empty{background:#0d2741;border-color:#365b78;color:#a9bfd3}.empty strong{color:#eef6ff}
+.modal-backdrop{background:#020b14d9}
+.login-error{color:#ff9d9d}
+.connection{background:#173650;color:#dbeafe}
+.toast{background:#0b2b49}
+@media(max-width:560px){.actions button{min-width:calc(50% - 8px)}}
 </style>
 </head>
 <body>
 
-<div class="login" id="loginScreen">
-  <form class="loginbox" id="loginForm">
-    <div class="brand"><div class="logo">MK</div><div><h1>MK Logística Express</h1><p class="muted">Painel administrativo</p></div></div>
-    <h2 style="margin-top:25px">Acessar painel</h2>
-    <p class="muted">Entre com seu e-mail e senha cadastrados.</p>
-    <label for="loginEmail">E-mail</label>
-    <input id="loginEmail" type="email" autocomplete="username" required>
-    <label for="loginPass">Senha</label>
-    <input id="loginPass" type="password" autocomplete="current-password" required>
-    <button class="primary" id="loginBtn" type="submit">Entrar</button>
-    <p id="loginError" style="color:#ff9d9d"></p>
-  </form>
+<div class="login-screen" id="loginScreen">
+<form class="login-box" id="loginForm">
+<div class="brand"><div class="logo">MK</div><div><strong>MK Logística Express</strong><p style="margin:2px 0;color:#6b7a8d;font-size:13px">Acesso administrativo seguro</p></div></div>
+<h2>Bem-vinda(o)!</h2>
+<p class="sub">Entre com o e-mail e a senha cadastrados no Supabase.</p>
+<label for="loginEmail">E-mail</label>
+<input class="field" id="loginEmail" type="email" autocomplete="username" required placeholder="seuemail@exemplo.com">
+<label for="loginPass">Senha</label>
+<input class="field" id="loginPass" type="password" autocomplete="current-password" required placeholder="Sua senha">
+<button class="primary" id="loginBtn" type="submit">Entrar no painel</button>
+<div class="login-error" id="loginError"></div>
+<div class="login-note">O acesso é validado pelo Supabase. Use o e-mail e a senha do usuário que você criou em Authentication → Users.</div>
+</form>
 </div>
 
 <header>
-  <div class="brand"><div class="logo">MK</div><div><h1>MK Logística Express</h1><p>Painel de cotações e propostas comerciais</p></div></div>
-  <div style="display:flex;gap:9px;align-items:center;flex-wrap:wrap">
-    <span id="userLabel" class="muted"></span>
-    <button class="dark" id="exportBtn">Exportar CSV</button>
-    <button class="orange" id="logoutBtn">Sair</button>
-  </div>
+<div class="brand"><div class="logo">MK</div><div><h1>MK Logística Express</h1><p>Painel de gestão de cotações</p></div></div>
+<div class="header-actions">
+<span class="connection" id="connectionState">Conectando ao banco…</span>
+<span class="signed" id="signedInLabel"></span>
+<button class="outline" id="logoutBtn">Sair</button>
+</div>
 </header>
 
-<main>
-  <div class="top">
-    <div><h2>Cotações</h2><div class="muted">Organize os pedidos e gere propostas para seus clientes.</div></div>
-    <button class="green" id="newQuoteBtn">+ Nova cotação</button>
-  </div>
-
-  <div class="stats">
-    <div class="stat"><span>Total de cotações</span><strong id="statTotal">0</strong></div>
-    <div class="stat"><span>Novas cotações</span><strong id="statNew">0</strong></div>
-    <div class="stat"><span>Em andamento</span><strong id="statProgress">0</strong></div>
-    <div class="stat"><span>Concluídas</span><strong id="statDone">0</strong></div>
-  </div>
-
-  <section class="card">
-    <h3>Pesquisar e filtrar</h3>
-    <div class="filters">
-      <input id="search" placeholder="Pesquisar cliente, telefone, rota...">
-      <select id="statusFilter"><option value="">Todos os status</option></select>
-      <select id="serviceFilter"><option value="">Todos os serviços</option><option>Frete compartilhado</option><option>Frete dedicado</option><option>Mudança</option><option>Transporte de carga</option><option>Outro</option></select>
-      <button class="dark" id="clearFilters">Limpar</button>
-    </div>
-  </section>
-
-  <div id="cards" class="list"><div class="empty">Carregando cotações...</div></div>
-</main>
-
-<footer>MK Logística Express · Painel interno de gestão de cotações</footer>
-
-<div class="modalbg" id="modalBackdrop">
-  <form class="modal" id="quoteForm">
-    <div class="top">
-      <h2 id="modalTitle">Nova cotação</h2>
-      <button type="button" class="dark" id="closeModal">Fechar</button>
-    </div>
-    <input type="hidden" id="quoteId">
-    <div class="formgrid">
-      <div><label for="name">Nome do cliente *</label><input id="name" required></div>
-      <div><label for="phone">Telefone / WhatsApp *</label><input id="phone" required></div>
-      <div><label for="email">E-mail</label><input id="email" type="email"></div>
-      <div><label for="service">Tipo de serviço *</label><select id="service" required><option value="">Selecione</option><option>Frete compartilhado</option><option>Frete dedicado</option><option>Mudança</option><option>Transporte de carga</option><option>Outro</option></select></div>
-      <div><label for="origin">Origem *</label><input id="origin" required placeholder="Cidade/UF"></div>
-      <div><label for="destination">Destino *</label><input id="destination" required placeholder="Cidade/UF"></div>
-      <div class="full"><label for="details">Detalhes da carga / mudança *</label><textarea id="details" rows="4" required placeholder="Itens, caixas, móveis, quantidade, observações..."></textarea></div>
-      <div class="full hide" id="statusWrap"><label for="editStatus">Status</label><select id="editStatus"></select></div>
-    </div>
-    <div class="modalfoot">
-      <button type="button" class="dark" id="cancelModal">Cancelar</button>
-      <button type="submit" class="green" id="saveQuoteBtn">Salvar cotação</button>
-    </div>
-  </form>
+<main id="mainPanel" class="hide">
+<div class="topline">
+<div><h2>Painel de cotações</h2><p class="sub">Acompanhe solicitações, confira os dados e atualize cada etapa do frete.</p></div>
+<button class="primary" id="newQuoteBtn">＋ Nova cotação</button>
 </div>
 
-<div class="toast" id="toast"></div>
+<section class="stats">
+<div class="stat"><div class="stat-icon">▤</div><div><span>Total de cotações</span><strong id="totalStat">0</strong></div></div>
+<div class="stat"><div class="stat-icon">◷</div><div><span>Novas</span><strong id="newStat">0</strong></div></div>
+<div class="stat"><div class="stat-icon">✓</div><div><span>Visualizadas</span><strong id="viewedStat">0</strong></div></div>
+<div class="stat"><div class="stat-icon">↗</div><div><span>Propostas enviadas</span><strong id="sentStat">0</strong></div></div>
+</section>
+
+<section class="panel">
+<div class="section-title"><h3>Buscar e filtrar</h3><button class="outline" id="exportBtn">⇩ Exportar CSV</button></div>
+<div class="filters">
+<input class="field" id="search" placeholder="Buscar nome, telefone, rota…">
+<select class="field" id="statusFilter">
+<option value="">Todos os status</option>
+<option>Nova cotação</option>
+<option>Usuário confirmado</option>
+<option>Proposta enviada</option>
+<option>Fechado</option>
+<option>Perdido</option>
+</select>
+<select class="field" id="serviceFilter">
+<option value="">Todos os serviços</option>
+<option>Transporte de cargas</option>
+<option>Transporte fracionado</option>
+<option>Entregas urgentes</option>
+<option>Mudança</option>
+</select>
+<button class="secondary" id="clearFilters">Limpar filtros</button>
+</div>
+</section>
+
+<div class="section-title"><h3>Solicitações recebidas</h3><span class="hint" id="resultCount"></span></div>
+<section class="cards" id="cards"><div class="empty"><strong>Carregando cotações…</strong>Aguarde um instante.</div></section>
+</main>
+
+<footer id="footerNote">Painel administrativo conectado ao Supabase. Os dados são sincronizados com o banco de dados.</footer>
+
+<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true">
+<div class="modal">
+<div class="modal-head"><h3 id="modalTitle">Nova cotação</h3><button class="outline" id="closeModal">Fechar ×</button></div>
+<form id="quoteForm">
+<input type="hidden" id="quoteId">
+<div class="form-grid">
+<div><label for="origin">Origem *</label><input class="field" id="origin" required placeholder="Cidade/UF"></div>
+<div><label for="destination">Destino *</label><input class="field" id="destination" required placeholder="Cidade/UF"></div>
+<div><label for="name">Nome do cliente *</label><input class="field" id="name" required></div>
+<div><label for="phone">Telefone/Celular *</label><input class="field" id="phone" type="tel" required></div>
+<div class="full"><label for="email">E-mail (opcional)</label><input class="field" id="email" type="email"></div>
+<div class="full"><label for="service">Serviço *</label>
+<select class="field" id="service" required>
+<option value="">Selecione</option>
+<option>Transporte de cargas</option>
+<option>Transporte fracionado</option>
+<option>Entregas urgentes</option>
+<option>Mudança</option>
+</select></div>
+<div class="full"><label for="details">Mais informações da carga *</label><textarea class="field" id="details" rows="4" required placeholder="Peso, quantidade, valor declarado, móveis, caixas e outros detalhes"></textarea></div>
+<div class="full" id="statusWrap"><label for="editStatus">Status</label>
+<select class="field" id="editStatus">
+<option>Nova cotação</option>
+<option>Usuário confirmado</option>
+<option>Proposta enviada</option>
+<option>Fechado</option>
+<option>Perdido</option>
+</select></div>
+</div>
+<div class="modal-actions"><button type="button" class="outline" id="cancelModal">Cancelar</button><button type="submit" class="primary" id="saveQuoteBtn">Salvar cotação</button></div>
+</form>
+</div>
+</div>
+<div class="toast" id="toast" role="status"></div>
 
 <script>
-/* CONFIGURAÇÃO DO SUPABASE DO PAINEL */
 const SUPABASE_URL = 'https://xrzodoyhbdjlckowepul.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_-gRHGelaMM_yNidyMFWpcQ_FyyLeWok';
-const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_-gRHGelaMM_yNidyMFWpcQ_FyyLeWok';
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-const STATUSES = ['Nova cotação','Em análise','Aguardando cliente','Proposta enviada','Agendado','Em andamento','Concluído','Cancelado'];
-const $ = id => document.getElementById(id);
-let currentUser = null;
+const STATUSES = ['Nova cotação','Usuário confirmado','Proposta enviada','Fechado','Perdido'];
 let quotes = [];
+let currentUser = null;
+let profiles = null;
 let busy = false;
 
-function toast(message,error=false){
-  const el=$('toast');
-  el.textContent=message;
-  el.className='toast'+(error?' error':'');
-  el.style.display='block';
+const $ = id => document.getElementById(id);
+
+function esc(v) {
+  return String(v ?? '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+function formatDate(d) {
+  if (!d) return '—';
+  try {
+    return new Intl.DateTimeFormat('pt-BR',{dateStyle:'short',timeStyle:'short'}).format(new Date(d));
+  } catch { return '—'; }
+}
+
+function toast(msg,error=false) {
+  $('toast').textContent=msg;
+  $('toast').classList.toggle('error',error);
+  $('toast').style.display='block';
   clearTimeout(window.toastTimer);
-  window.toastTimer=setTimeout(()=>el.style.display='none',4000);
+  window.toastTimer=setTimeout(()=>$('toast').style.display='none',3200);
 }
-function escapeHtml(value){
-  return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-function money(value){
-  return Number(value||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-}
-function setBusy(button,busy,label){
-  button.disabled=busy;
-  if(busy) button.dataset.oldLabel=button.textContent;
-  button.textContent=busy?(label||'Aguarde...'):(button.dataset.oldLabel||'Salvar cotação');
-}
-function normalizeQuote(row){
-  return {
-    dbId:String(row.id),
-    id:row.codigo||String(row.id),
-    origin:row.origem||'',
-    destination:row.destino||'',
-    name:row.nome||'',
-    phone:row.telefone||'',
-    email:row.email||'',
-    service:row.servico||'',
-    details:row.detalhes||'',
-    status:row.status||'Nova cotação',
-    createdAt:row.criado_em||'',
-    updatedAt:row.atualizado_em||''
-  };
-}
-function dateFormat(value){
-  if(!value)return '—';
-  const d=new Date(value);
-  return isNaN(d)?'—':d.toLocaleString('pt-BR');
-}
-async function initSession(){
-  const {data,error}=await db.auth.getSession();
-  if(error){$('loginError').textContent=error.message;return;}
-  if(data.session) await startApp(data.session.user);
-}
-async function startApp(user){
-  currentUser=user;
-  try{
-    const {data:profile,error}=await db.from('perfis').select('nome,ativo').eq('id',user.id).maybeSingle();
-    if(error) throw error;
-    if(profile && profile.ativo===false){
-      await db.auth.signOut();
-      $('loginError').textContent='Seu usuário está desativado. Entre em contato com o administrador.';
-      return;
-    }
-    $('loginScreen').classList.add('hide');
-    $('userLabel').textContent=profile?.nome||user.email||'Usuário';
-    await refresh();
-  }catch(err){
-    console.error(err);
-    $('loginError').textContent='Não foi possível validar seu perfil: '+err.message;
-    $('loginScreen').classList.remove('hide');
+
+function setBusy(button,on,label) {
+  if (!button) return;
+  button.disabled=on;
+  if (on) {
+    button.dataset.old=button.textContent;
+    button.innerHTML='<span class="spinner"></span>'+(label||'Aguarde…');
+  } else if (button.dataset.old) {
+    button.textContent=button.dataset.old;
+    delete button.dataset.old;
   }
 }
+
+function showLogin(message='') {
+  $('loginScreen').style.display='flex';
+  $('mainPanel').classList.add('hide');
+  $('loginError').textContent=message;
+  $('loginError').style.display=message?'block':'none';
+}
+
+function showPanel() {
+  $('loginScreen').style.display='none';
+  $('mainPanel').classList.remove('hide');
+  $('signedInLabel').textContent=currentUser?.email||'';
+}
+
+function mapQuote(row) {
+  return {
+    dbId:row.id,
+    id:row.codigo,
+    origin:row.origem,
+    destination:row.destino,
+    name:row.nome,
+    phone:row.telefone,
+    email:row.email||'',
+    service:row.servico,
+    details:row.detalhes,
+    status:row.status,
+    createdAt:row.criado_em,
+    updatedAt:row.atualizado_em,
+    viewedAt:row.my_viewed_at||null
+  };
+}
+
+async function checkProfile() {
+  const {data,error}=await db.from('perfis').select('id,nome,ativo').eq('id',currentUser.id).maybeSingle();
+  if (error) throw error;
+  if (!data||!data.ativo) throw new Error('Seu usuário não está autorizado. Confira se o UUID foi cadastrado na tabela perfis e se ativo está true.');
+  profiles=data;
+}
+
+async function loadQuotes() {
+  const [
+    {data:rows,error},
+    {data:views,error:viewErr}
+  ]=await Promise.all([
+    db.from('cotacoes').select('*').order('criado_em',{ascending:false}),
+    db.from('visualizacoes_cotacoes').select('cotacao_id,visualizada_em').eq('usuario_id',currentUser.id)
+  ]);
+  if (error) throw error;
+  if (viewErr) throw viewErr;
+  const viewMap=new Map((views||[]).map(v=>[v.cotacao_id,v.visualizada_em]));
+  quotes=(rows||[]).map(r=>mapQuote({...r,my_viewed_at:viewMap.get(r.id)||null}));
+  render();
+}
+
+async function refresh() {
+  try {
+    await loadQuotes();
+    $('connectionState').textContent='● Banco conectado';
+    $('connectionState').style.color='#c8f7d8';
+  } catch(e) {
+    console.error(e);
+    $('connectionState').textContent='Falha ao carregar';
+    toast('Não foi possível carregar as cotações: '+(e.message||'verifique as permissões RLS'),true);
+  }
+}
+
+async function initSession() {
+  try {
+    const {data,error}=await db.auth.getSession();
+    if (error) throw error;
+    if (data.session) {
+      currentUser=data.session.user;
+      await checkProfile();
+      showPanel();
+      await refresh();
+    } else showLogin();
+  } catch(e) {
+    showLogin(e.message||'Não foi possível validar o acesso.');
+  }
+}
+
 $('loginForm').addEventListener('submit',async e=>{
   e.preventDefault();
   const btn=$('loginBtn');
-  btn.disabled=true;btn.textContent='Entrando...';
-  $('loginError').textContent='';
-  try{
-    const {data,error}=await db.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPass').value});
-    if(error) throw error;
-    await startApp(data.user);
-  }catch(err){$('loginError').textContent=err.message||'Não foi possível entrar.';}
-  finally{btn.disabled=false;btn.textContent='Entrar';}
+  setBusy(btn,true,'Validando acesso…');
+  $('loginError').style.display='none';
+  try {
+    const {data,error}=await db.auth.signInWithPassword({
+      email:$('loginEmail').value.trim(),
+      password:$('loginPass').value
+    });
+    if (error) throw error;
+    currentUser=data.user;
+    await checkProfile();
+    showPanel();
+    await refresh();
+    toast('Login realizado com sucesso.');
+  } catch(err) {
+    console.error(err);
+    $('loginError').textContent=err.message||'Não foi possível entrar.';
+    $('loginError').style.display='block';
+    if (currentUser) {
+      await db.auth.signOut();
+      currentUser=null;
+    }
+  } finally {
+    setBusy(btn,false);
+  }
 });
+
 $('logoutBtn').onclick=async()=>{
   await db.auth.signOut();
-  currentUser=null;quotes=[];
-  $('loginScreen').classList.remove('hide');
-  $('cards').innerHTML='<div class="empty">Entre para visualizar as cotações.</div>';
+  currentUser=null;
+  quotes=[];
+  showLogin();
+  $('loginPass').value='';
+  $('connectionState').textContent='Sessão encerrada';
 };
-db.auth.onAuthStateChange((_event,session)=>{
-  if(session?.user && !currentUser) setTimeout(()=>startApp(session.user),0);
-});
-async function refresh(){
-  $('cards').innerHTML='<div class="empty">Carregando cotações...</div>';
-  try{
-    const {data,error}=await db.from('cotacoes').select('*').order('criado_em',{ascending:false});
-    if(error) throw error;
-    quotes=(data||[]).map(normalizeQuote);
-    render();
-  }catch(err){
-    console.error(err);
-    $('cards').innerHTML='<div class="empty">Erro ao carregar cotações: '+escapeHtml(err.message)+'<br>Confira as permissões e políticas RLS do Supabase.</div>';
-    toast('Não foi possível carregar as cotações.',true);
+
+db.auth.onAuthStateChange(async(event,session)=>{
+  if (event==='SIGNED_OUT') {
+    currentUser=null;
+    quotes=[];
+    showLogin();
+  } else if (event==='SIGNED_IN'&&session&&!currentUser) {
+    currentUser=session.user;
+    try {
+      await checkProfile();
+      showPanel();
+      await refresh();
+    } catch(e) {
+      await db.auth.signOut();
+      showLogin(e.message);
+    }
   }
-}
-function render(){
-  const term=$('search').value.trim().toLowerCase();
+});
+
+function render() {
+  $('totalStat').textContent=quotes.length;
+  $('newStat').textContent=quotes.filter(q=>q.status==='Nova cotação').length;
+  $('viewedStat').textContent=quotes.filter(q=>q.viewedAt).length;
+  $('sentStat').textContent=quotes.filter(q=>q.status==='Proposta enviada').length;
+
+  const term=$('search').value.toLocaleLowerCase('pt-BR');
   const status=$('statusFilter').value;
   const service=$('serviceFilter').value;
-  const filtered=quotes.filter(q=>{
-    const searchable=[q.id,q.name,q.phone,q.email,q.origin,q.destination,q.service,q.details,q.status].join(' ').toLowerCase();
-    return (!term||searchable.includes(term))&&(!status||q.status===status)&&(!service||q.service===service);
-  });
-  $('statTotal').textContent=quotes.length;
-  $('statNew').textContent=quotes.filter(q=>q.status==='Nova cotação').length;
-  $('statProgress').textContent=quotes.filter(q=>['Em análise','Aguardando cliente','Proposta enviada','Agendado','Em andamento'].includes(q.status)).length;
-  $('statDone').textContent=quotes.filter(q=>q.status==='Concluído').length;
-  $('statusFilter').innerHTML='<option value="">Todos os status</option>'+STATUSES.map(s=>`<option ${status===s?'selected':''}>${escapeHtml(s)}</option>`).join('');
-  $('editStatus').innerHTML=STATUSES.map(s=>`<option>${escapeHtml(s)}</option>`).join('');
-  if(!filtered.length){
-    $('cards').innerHTML='<div class="empty"><strong>Nenhuma cotação encontrada.</strong><br>Cadastre uma nova cotação ou altere os filtros.</div>';
+
+  const list=quotes.filter(q=>
+    (!status||q.status===status)&&
+    (!service||q.service===service)&&
+    [q.id,q.origin,q.destination,q.name,q.phone,q.email,q.service,q.details]
+      .join(' ').toLocaleLowerCase('pt-BR').includes(term)
+  );
+
+  $('resultCount').textContent=list.length+' resultado(s)';
+
+  $('cards').innerHTML=list.length?list.map(q=>`
+    <article class="quote">
+      <div class="quote-top">
+        <div>
+          <div class="quote-id">${esc(q.id)} · ${esc(formatDate(q.createdAt))}</div>
+          <span class="badge ${q.status==='Nova cotação'?'new':q.status==='Fechado'?'closed':''}">${esc(q.status)}</span>
+          ${q.viewedAt?'<span class="badge viewed">Visualizada</span>':''}
+        </div>
+        <button class="outline" data-action="edit" data-id="${esc(q.dbId)}">Editar</button>
+      </div>
+      <div class="route">${esc(q.origin)} <span>→</span> ${esc(q.destination)}</div>
+      <div class="info">
+        <div><small>Nome do cliente</small><strong>${esc(q.name)}</strong></div>
+        <div><small>Telefone/Celular</small><strong>${esc(q.phone)}</strong></div>
+        <div><small>E-mail</small><strong>${esc(q.email||'Não informado')}</strong></div>
+        <div><small>Serviço</small><strong>${esc(q.service)}</strong></div>
+      </div>
+      <div class="description"><strong>Informações da carga</strong><br>${esc(q.details)}</div>
+      ${q.viewedAt?`<p class="hint">Visualizada em ${esc(formatDate(q.viewedAt))}</p>`:''}
+      <div class="actions">
+        ${!q.viewedAt?`<button class="success" data-action="viewed" data-id="${esc(q.dbId)}">✓ Confirmar que vi</button>`:`<button class="secondary" data-action="unviewed" data-id="${esc(q.dbId)}">Marcar não vista</button>`}
+        <button class="secondary" data-action="whatsapp" data-id="${esc(q.dbId)}">Abrir WhatsApp</button>
+        <button class="primary" data-action="proposal" data-id="${esc(q.dbId)}">📄 Gerar proposta PDF</button>
+        <button class="outline" data-action="status" data-id="${esc(q.dbId)}">Alterar status</button>
+        <button class="danger" data-action="delete" data-id="${esc(q.dbId)}">Excluir</button>
+      </div>
+    </article>
+  `).join(''):'<div class="empty"><strong>Nenhuma cotação encontrada</strong>Quando houver pedidos no banco, eles aparecerão aqui. Você também pode adicionar uma cotação manualmente.</div>';
+}
+
+function gerarPropostaPDF(q) {
+  const frete = prompt('Valor do frete (R$):', '0,00');
+  if (frete === null) return;
+  const ajudante = prompt('Valor do ajudante (R$):', '0,00');
+  if (ajudante === null) return;
+  const embalagem = prompt('Valor de embalagem e materiais (R$):', '0,00');
+  if (embalagem === null) return;
+  const adicionais = prompt('Outros adicionais (R$):', '0,00');
+  if (adicionais === null) return;
+  const prazo = prompt('Prazo estimado de entrega:', '4 a 6 dias úteis');
+  if (prazo === null) return;
+  const pagamento = prompt('Condições de pagamento:', 'Pix ou cartão de crédito em até 10x, com juros da operadora');
+  if (pagamento === null) return;
+  const validade = prompt('Validade da proposta:', '7 dias');
+  if (validade === null) return;
+  const observacoes = prompt('Observações adicionais:', 'O prazo é estimado e pode ocorrer entrega antecipada.') ?? '';
+
+  function moedaParaNumero(valor) {
+    const texto = String(valor).trim().replace(/\s/g, '').replace(/\./g, '').replace(',', '.');
+    const n = Number(texto);
+    return Number.isFinite(n) && n >= 0 ? n : 0;
+  }
+  function dinheiro(valor) {
+    return valor.toLocaleString('pt-BR', {style:'currency',currency:'BRL'});
+  }
+  const valorFrete = moedaParaNumero(frete);
+  const valorAjudante = moedaParaNumero(ajudante);
+  const valorEmbalagem = moedaParaNumero(embalagem);
+  const valorAdicionais = moedaParaNumero(adicionais);
+  const total = valorFrete + valorAjudante + valorEmbalagem + valorAdicionais;
+  const numero = 'MK-' + Date.now().toString().slice(-8);
+  const data = new Date().toLocaleDateString('pt-BR');
+
+  const documento = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proposta Comercial ${numero} | MK Logística Express</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#eef2f6;color:#172536;font:14px/1.55 Arial,Helvetica,sans-serif}
+.toolbar{max-width:850px;margin:20px auto 0;display:flex;justify-content:flex-end;gap:10px;padding:0 18px}
+button{border:0;border-radius:8px;padding:12px 18px;font-weight:bold;cursor:pointer;background:#1769aa;color:#fff}
+button.secondary{background:#e2eaf2;color:#183c5c}
+.sheet{max-width:850px;margin:14px auto 30px;background:#fff;padding:42px 48px;box-shadow:0 8px 28px #18334d18}
+.header{display:flex;justify-content:space-between;gap:20px;align-items:center;border-bottom:4px solid #f59e0b;padding-bottom:22px}
+.brand{display:flex;align-items:center;gap:13px}.logo{width:58px;height:58px;background:#10243a;color:white;border-bottom:5px solid #f59e0b;border-radius:12px;display:grid;place-items:center;font-size:23px;font-weight:900}
+h1{margin:0;color:#10243a;font-size:23px} .muted{color:#64748b;font-size:12px}
+.docmeta{text-align:right;font-size:12px}.docmeta strong{display:block;font-size:14px;color:#1769aa}
+h2{font-size:17px;color:#10243a;margin:26px 0 12px}
+.intro{margin:22px 0}.client{background:#f5f8fb;border:1px solid #e1e8f0;border-radius:10px;padding:15px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.label{display:block;font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.4px}.value{font-weight:700;overflow-wrap:anywhere}
+.route{display:flex;align-items:center;gap:12px;margin:15px 0;padding:15px;border-radius:10px;background:#edf5fc;font-weight:bold;font-size:16px}.arrow{color:#1769aa}
+table{width:100%;border-collapse:collapse;margin-top:10px}th,td{padding:12px;border-bottom:1px solid #e1e8f0;text-align:left}th{background:#f3f6fa;color:#42566b;font-size:12px}td:last-child,th:last-child{text-align:right}
+.total{display:flex;justify-content:space-between;align-items:center;background:#10243a;color:#fff;padding:17px 18px;border-radius:10px;margin-top:14px}.total strong{font-size:23px}
+.terms{padding-left:18px}.observations{white-space:pre-wrap;background:#f7f9fb;padding:13px;border-radius:8px;min-height:40px}
+.signature{margin-top:42px;padding-top:18px;border-top:1px solid #cbd5e1;text-align:center;width:280px}
+.footer{margin-top:32px;border-top:1px solid #e1e8f0;padding-top:14px;text-align:center;color:#64748b;font-size:11px}
+@media(max-width:600px){.sheet{margin:10px;padding:24px 18px}.header{align-items:flex-start;flex-direction:column}.docmeta{text-align:left}.client{grid-template-columns:1fr}.route{font-size:14px;flex-wrap:wrap}.toolbar{margin-top:12px}}
+@media print{body{background:#fff}.toolbar{display:none}.sheet{margin:0 auto;max-width:none;box-shadow:none;padding:12mm 13mm}.header{break-inside:avoid}h2,table,.total,.terms,.observations{break-inside:avoid}@page{size:A4;margin:0}}
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <button class="secondary" onclick="window.close()">Fechar</button>
+  <button onclick="window.print()">Imprimir / Salvar como PDF</button>
+</div>
+<main class="sheet">
+  <div class="header">
+    <div class="brand"><div class="logo">MK</div><div><h1>MK Logística Express</h1><div class="muted">Transporte de cargas, fretes e mudanças</div></div></div>
+    <div class="docmeta"><strong>PROPOSTA COMERCIAL</strong>Nº ${numero}<br>Data: ${data}</div>
+  </div>
+  <div class="intro">Olá, <strong>${esc(q.name)}</strong>!<br>Apresentamos nossa proposta comercial para o serviço solicitado. Agradecemos a oportunidade de atender você.</div>
+  <h2>Dados do cliente</h2>
+  <div class="client">
+    <div><span class="label">Cliente</span><div class="value">${esc(q.name)}</div></div>
+    <div><span class="label">Telefone</span><div class="value">${esc(q.phone)}</div></div>
+    <div><span class="label">E-mail</span><div class="value">${esc(q.email || 'Não informado')}</div></div>
+    <div><span class="label">Tipo de serviço</span><div class="value">${esc(q.service)}</div></div>
+  </div>
+  <h2>Trajeto do transporte</h2>
+  <div class="route"><span>${esc(q.origin)}</span><span class="arrow">→</span><span>${esc(q.destination)}</span></div>
+  <h2>Descrição da carga / serviço</h2>
+  <div>${esc(q.details).replace(/\n/g, '<br>')}</div>
+  <h2>Investimento</h2>
+  <table><thead><tr><th>Descrição</th><th>Valor</th></tr></thead><tbody>
+    <tr><td>Valor do frete</td><td>${dinheiro(valorFrete)}</td></tr>
+    <tr><td>Ajudante / descarga</td><td>${dinheiro(valorAjudante)}</td></tr>
+    <tr><td>Embalagem e materiais</td><td>${dinheiro(valorEmbalagem)}</td></tr>
+    <tr><td>Outros adicionais</td><td>${dinheiro(valorAdicionais)}</td></tr>
+  </tbody></table>
+  <div class="total"><span>VALOR TOTAL DA PROPOSTA</span><strong>${dinheiro(total)}</strong></div>
+  <h2>Condições comerciais</h2>
+  <ul class="terms">
+    <li><strong>Prazo estimado:</strong> ${esc(prazo)}</li>
+    <li><strong>Pagamento:</strong> ${esc(pagamento)}</li>
+    <li><strong>Validade desta proposta:</strong> ${esc(validade)}</li>
+  </ul>
+  <h2>Observações</h2>
+  <div class="observations">${esc(observacoes || 'Nenhuma observação adicional.')}</div>
+  <p>Esta proposta considera as informações fornecidas pelo cliente. Alterações no volume, quantidade de itens, trajeto ou condições de coleta e entrega poderão exigir revisão do valor e do prazo.</p>
+  <div class="signature">MK Logística Express<br><span class="muted">Responsável pela proposta</span></div>
+  <div class="footer">MK Logística Express · Proposta ${numero}<br>Documento comercial gerado em ${data}</div>
+</main>
+</body>
+</html>`;
+
+  const janela = window.open('', '_blank');
+  if (!janela) {
+    toast('O navegador bloqueou a janela. Permita pop-ups para gerar a proposta em PDF.', true);
     return;
   }
-  $('cards').innerHTML=filtered.map(q=>`
-    <article class="quote">
-      <div class="quotehead">
-        <div><strong>${escapeHtml(q.name)}</strong><div class="muted">${escapeHtml(q.id)} · ${escapeHtml(q.service)}</div></div>
-        <span class="badge">${escapeHtml(q.status)}</span>
-      </div>
-      <div class="route">${escapeHtml(q.origin)} <span>→</span> ${escapeHtml(q.destination)}</div>
-      <div class="muted">Telefone: ${escapeHtml(q.phone)}<br>E-mail: ${escapeHtml(q.email||'Não informado')}<br>Recebida em: ${dateFormat(q.createdAt)}</div>
-      <div class="details">${escapeHtml(q.details)}</div>
-      <div class="actions">
-        <button class="green" data-action="proposal" data-id="${escapeHtml(q.dbId)}">Gerar proposta PDF</button>
-        <button class="primary" data-action="whatsapp" data-id="${escapeHtml(q.dbId)}">WhatsApp</button>
-        <button class="dark" data-action="edit" data-id="${escapeHtml(q.dbId)}">Editar</button>
-        <button class="orange" data-action="status" data-id="${escapeHtml(q.dbId)}">Alterar status</button>
-        <button class="red" data-action="delete" data-id="${escapeHtml(q.dbId)}">Excluir</button>
-      </div>
-    </article>`).join('');
+  janela.document.open();
+  janela.document.write(documento);
+  janela.document.close();
 }
-function openModal(q){
+
+function openModal(q) {
   $('quoteForm').reset();
   $('quoteId').value=q?.dbId||'';
   $('modalTitle').textContent=q?'Editar cotação':'Nova cotação';
-  ['origin','destination','name','phone','email','service','details'].forEach(k=>{
-    const key={origin:'origin',destination:'destination',name:'name',phone:'phone',email:'email',service:'service',details:'details'}[k];
-    $(k).value=q?.[key]||'';
-  });
+  ['origin','destination','name','phone','email','service','details'].forEach(k=>$(k).value=q?.[k]||'');
   $('editStatus').value=q?.status||'Nova cotação';
   $('statusWrap').classList.toggle('hide',!q);
   $('modalBackdrop').classList.add('open');
 }
-function closeModal(){$('modalBackdrop').classList.remove('open');}
+
+function closeModal() {
+  $('modalBackdrop').classList.remove('open');
+}
+
 $('newQuoteBtn').onclick=()=>openModal();
 $('closeModal').onclick=closeModal;
 $('cancelModal').onclick=closeModal;
-$('modalBackdrop').addEventListener('click',e=>{if(e.target===$('modalBackdrop'))closeModal();});
+$('modalBackdrop').addEventListener('click',e=>{
+  if (e.target===$('modalBackdrop')) closeModal();
+});
 
 $('quoteForm').addEventListener('submit',async e=>{
   e.preventDefault();
-  if(busy)return;
+  if (busy) return;
   busy=true;
   const btn=$('saveQuoteBtn');
-  setBusy(btn,true,'Salvando...');
+  setBusy(btn,true,'Salvando…');
+
   const id=$('quoteId').value;
   const old=quotes.find(q=>q.dbId===id);
   const payload={
@@ -313,138 +601,143 @@ $('quoteForm').addEventListener('submit',async e=>{
     status:old?$('editStatus').value:'Nova cotação',
     atualizado_em:new Date().toISOString()
   };
-  try{
+
+  try {
     let result;
-    if(old){
+    if (old) {
       result=await db.from('cotacoes').update(payload).eq('id',id).select().single();
-    }else{
+    } else {
       payload.criado_por=currentUser.id;
-      payload.criado_em=new Date().toISOString();
       result=await db.from('cotacoes').insert(payload).select().single();
     }
-    if(result.error)throw result.error;
+    if (result.error) throw result.error;
     closeModal();
     await refresh();
-    toast(old?'Cotação atualizada!':'Cotação cadastrada!');
-  }catch(err){
+    toast(old?'Cotação atualizada no banco.':'Cotação salva no banco.');
+  } catch(err) {
     console.error(err);
-    toast('Erro ao salvar: '+err.message,true);
-  }finally{
-    busy=false;btn.disabled=false;btn.textContent='Salvar cotação';
+    toast('Erro ao salvar: '+(err.message||'verifique as políticas RLS'),true);
+  } finally {
+    busy=false;
+    setBusy(btn,false);
   }
 });
 
-function gerarPropostaPDF(q){
-  const valorFrete=Number(prompt('Valor do frete (R$):','0')||0);
-  const valorAjudante=Number(prompt('Valor de ajudante/descarga (R$):','0')||0);
-  const valorEmbalagem=Number(prompt('Valor de embalagem e materiais (R$):','0')||0);
-  const valorAdicionais=Number(prompt('Outros adicionais (R$):','0')||0);
-  if([valorFrete,valorAjudante,valorEmbalagem,valorAdicionais].some(n=>!Number.isFinite(n)||n<0)){
-    toast('Informe valores válidos e não negativos.',true);return;
-  }
-  const prazo=prompt('Prazo estimado de entrega:','4 a 6 dias úteis')||'A combinar';
-  const pagamento=prompt('Condições de pagamento:','Pagamento na coleta via Pix ou cartão. Juros da máquina, se houver, por conta do cliente.')||'A combinar';
-  const validade=prompt('Validade da proposta:','7 dias')||'7 dias';
-  const observacoes=prompt('Observações adicionais:','')||'';
-  const total=valorFrete+valorAjudante+valorEmbalagem+valorAdicionais;
-  const numero='MK-'+String(q.id).replace(/[^a-zA-Z0-9-]/g,'');
-  const data=new Date().toLocaleDateString('pt-BR');
-  const dinheiro=n=>Number(n).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-  const esc=escapeHtml;
-  const documento=`<!DOCTYPE html>
-<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Proposta ${numero} | MK Logística Express</title>
-<style>
-*{box-sizing:border-box}body{margin:0;background:#edf2f7;color:#172536;font:14px/1.55 Arial,sans-serif}
-.toolbar{position:sticky;top:0;background:#06172a;padding:12px;display:flex;gap:10px;justify-content:center}
-button{border:0;border-radius:8px;padding:11px 15px;cursor:pointer;font-weight:bold;background:#1677d2;color:white}.secondary{background:#f59e0b;color:#172536}
-.sheet{max-width:850px;margin:25px auto;background:white;padding:48px;box-shadow:0 5px 25px #0001}
-.header{display:flex;justify-content:space-between;gap:20px;align-items:center;border-bottom:4px solid #f59e0b;padding-bottom:20px}
-.brand{display:flex;align-items:center;gap:12px}.logo{display:grid;place-items:center;width:52px;height:52px;border-radius:12px;background:#10243a;color:white;font-size:21px;font-weight:900}
-h1{font-size:21px;margin:0;color:#10243a}.muted{color:#64748b;font-size:12px}.docmeta{text-align:right;font-size:12px}.docmeta strong{display:block;color:#1769aa;font-size:14px}
-h2{font-size:16px;color:#10243a;margin:26px 0 10px}
-.intro{margin:23px 0}.client{display:grid;grid-template-columns:1fr 1fr;gap:12px;background:#f5f8fb;border:1px solid #e1e8f0;border-radius:10px;padding:15px}
-.label{display:block;font-size:10px;color:#64748b;text-transform:uppercase}.value{font-weight:bold;overflow-wrap:anywhere}
-.route{padding:14px;background:#edf5fc;border-radius:8px;font-weight:bold;overflow-wrap:anywhere}.route span{color:#1769aa;padding:0 8px}
-table{width:100%;border-collapse:collapse;margin-top:10px}th,td{padding:11px;border-bottom:1px solid #e1e8f0;text-align:left}th{background:#f3f6fa}td:last-child,th:last-child{text-align:right}
-.total{margin-top:14px;padding:16px;background:#10243a;color:white;border-radius:9px;display:flex;justify-content:space-between;gap:12px;align-items:center}.total strong{font-size:22px}
-.observations{white-space:pre-wrap;background:#f7f9fb;padding:12px;border-radius:8px}.signature{margin-top:42px;border-top:1px solid #cbd5e1;padding-top:15px;text-align:center;width:270px}
-.footer{text-align:center;border-top:1px solid #e1e8f0;margin-top:30px;padding-top:13px;color:#64748b;font-size:11px}
-@media(max-width:600px){.sheet{margin:0;padding:22px 16px}.header{align-items:flex-start;flex-direction:column}.docmeta{text-align:left}.client{grid-template-columns:1fr}.total{align-items:flex-start;flex-direction:column}}
-@media print{body{background:white}.toolbar{display:none}.sheet{margin:0;max-width:none;box-shadow:none;padding:12mm 13mm}@page{size:A4;margin:0}}
-</style></head><body>
-<div class="toolbar"><button class="secondary" onclick="window.close()">Fechar</button><button onclick="window.print()">Imprimir / Salvar como PDF</button></div>
-<main class="sheet">
-<div class="header"><div class="brand"><div class="logo">MK</div><div><h1>MK Logística Express</h1><div class="muted">Transporte de cargas, fretes e mudanças</div></div></div><div class="docmeta"><strong>PROPOSTA COMERCIAL</strong>${numero}<br>Data: ${data}</div></div>
-<div class="intro">Olá, <strong>${esc(q.name)}</strong>!<br>Apresentamos nossa proposta comercial para o serviço solicitado. Agradecemos a oportunidade de atender você.</div>
-<h2>Dados do cliente</h2><div class="client">
-<div><span class="label">Cliente</span><div class="value">${esc(q.name)}</div></div>
-<div><span class="label">Telefone</span><div class="value">${esc(q.phone)}</div></div>
-<div><span class="label">E-mail</span><div class="value">${esc(q.email||'Não informado')}</div></div>
-<div><span class="label">Tipo de serviço</span><div class="value">${esc(q.service)}</div></div>
-</div>
-<h2>Trajeto do transporte</h2><div class="route">${esc(q.origin)} <span>→</span> ${esc(q.destination)}</div>
-<h2>Descrição da carga / serviço</h2><div>${esc(q.details).replace(/\\n/g,'<br>')}</div>
-<h2>Investimento</h2><table><thead><tr><th>Descrição</th><th>Valor</th></tr></thead><tbody>
-<tr><td>Valor do frete</td><td>${dinheiro(valorFrete)}</td></tr>
-<tr><td>Ajudante / descarga</td><td>${dinheiro(valorAjudante)}</td></tr>
-<tr><td>Embalagem e materiais</td><td>${dinheiro(valorEmbalagem)}</td></tr>
-<tr><td>Outros adicionais</td><td>${dinheiro(valorAdicionais)}</td></tr>
-</tbody></table><div class="total"><span>VALOR TOTAL DA PROPOSTA</span><strong>${dinheiro(total)}</strong></div>
-<h2>Condições comerciais</h2><ul>
-<li><strong>Prazo estimado:</strong> ${esc(prazo)}</li>
-<li><strong>Pagamento:</strong> ${esc(pagamento)}</li>
-<li><strong>Validade desta proposta:</strong> ${esc(validade)}</li>
-</ul>
-<h2>Observações</h2><div class="observations">${esc(observacoes||'Nenhuma observação adicional.')}</div>
-<p>Esta proposta considera as informações fornecidas pelo cliente. Alterações no volume, quantidade de itens, trajeto ou condições de coleta e entrega poderão exigir revisão do valor e do prazo.</p>
-<div class="signature">MK Logística Express<br><span class="muted">Responsável pela proposta</span></div>
-<div class="footer">MK Logística Express · ${numero}<br>Documento comercial gerado em ${data}</div>
-</main></body></html>`;
-  const win=window.open('','_blank');
-  if(!win){toast('Permita pop-ups no navegador para gerar a proposta.',true);return;}
-  win.document.open();win.document.write(documento);win.document.close();
-}
 $('cards').addEventListener('click',async e=>{
-  const btn=e.target.closest('button[data-action]');
-  if(!btn)return;
-  const q=quotes.find(x=>x.dbId===btn.dataset.id);
-  if(!q)return;
-  const action=btn.dataset.action;
-  try{
-    if(action==='proposal'){gerarPropostaPDF(q);return;}
-    if(action==='edit'){openModal(q);return;}
-    if(action==='whatsapp'){
-      const digits=q.phone.replace(/\D/g,'');
-      if(!digits){toast('Telefone não informado.',true);return;}
-      const msg=`Olá, ${q.name}! Aqui é da MK Logística Express. Recebemos sua solicitação de ${q.service}, de ${q.origin} para ${q.destination}. Detalhes: ${q.details}`;
-      window.open('https://wa.me/'+digits+'?text='+encodeURIComponent(msg),'_blank','noopener');return;
+  const b=e.target.closest('button[data-action]');
+  if (!b) return;
+  const q=quotes.find(x=>x.dbId===b.dataset.id);
+  if (!q) return;
+  const action=b.dataset.action;
+
+  try {
+    if (action==='proposal') {
+      gerarPropostaPDF(q);
+      return;
     }
-    if(action==='status'){
-      const next=prompt('Digite um dos status abaixo:\n'+STATUSES.join('\n'),q.status);
-      if(!next)return;
-      if(!STATUSES.includes(next)){toast('Status inválido.',true);return;}
-      const {error}=await db.from('cotacoes').update({status:next,atualizado_em:new Date().toISOString()}).eq('id',q.dbId);
-      if(error)throw error;
-      await refresh();toast('Status atualizado!');return;
+
+    if (action==='edit') {
+      openModal(q);
+      return;
     }
-    if(action==='delete'){
-      if(!confirm('Excluir a cotação de '+q.name+'? Esta ação não pode ser desfeita.'))return;
+
+    if (action==='whatsapp') {
+      let digits=String(q.phone||'').replace(/\D/g,'');
+      if (!digits) {
+        toast('Telefone não informado nesta cotação.',true);
+        return;
+      }
+      // Se o telefone tiver DDD, mas não tiver DDI, acrescenta o código do Brasil.
+      if (digits.length===10 || digits.length===11) digits='55'+digits;
+      // Um número brasileiro completo deve ter 55 + DDD + número.
+      if (digits.startsWith('55') && digits.length!==12 && digits.length!==13) {
+        toast('O telefone parece incompleto. Confira o DDD e o número do cliente.',true);
+        return;
+      }
+      if (!digits.startsWith('55') && digits.length<10) {
+        toast('Informe o telefone com DDD para abrir o WhatsApp.',true);
+        return;
+      }
+      const msg=`Olá, ${q.name}! Aqui é da MK Logística Express. Recebemos sua solicitação de ${q.service}, de ${q.origin} para ${q.destination}. Gostaríamos de confirmar os detalhes da carga: ${q.details}`;
+      const url='https://wa.me/'+digits+'?text='+encodeURIComponent(msg);
+      window.open(url,'_blank');
+      return;
+    }
+
+    if (action==='viewed') {
+      const {error}=await db.from('visualizacoes_cotacoes').upsert({
+        cotacao_id:q.dbId,
+        usuario_id:currentUser.id,
+        visualizada_em:new Date().toISOString()
+      },{onConflict:'cotacao_id,usuario_id'});
+      if (error) throw error;
+      await refresh();
+      toast('Visualização registrada.');
+      return;
+    }
+
+    if (action==='unviewed') {
+      const {error}=await db.from('visualizacoes_cotacoes')
+        .delete().eq('cotacao_id',q.dbId).eq('usuario_id',currentUser.id);
+      if (error) throw error;
+      await refresh();
+      toast('Cotação marcada como não vista.');
+      return;
+    }
+
+    if (action==='status') {
+      const n=prompt('Digite exatamente um status:\n'+STATUSES.join('\n'),q.status);
+      if (!n) return;
+      if (!STATUSES.includes(n)) {
+        toast('Status inválido.',true);
+        return;
+      }
+      const {error}=await db.from('cotacoes')
+        .update({status:n,atualizado_em:new Date().toISOString()}).eq('id',q.dbId);
+      if (error) throw error;
+      await refresh();
+      toast('Status atualizado.');
+      return;
+    }
+
+    if (action==='delete') {
+      if (!confirm('Excluir a cotação '+q.id+' de '+q.name+'? Esta ação não pode ser desfeita.')) return;
       const {error}=await db.from('cotacoes').delete().eq('id',q.dbId);
-      if(error)throw error;
-      await refresh();toast('Cotação excluída.');
+      if (error) throw error;
+      await refresh();
+      toast('Cotação excluída do banco.');
     }
-  }catch(err){console.error(err);toast('Não foi possível concluir: '+err.message,true);}
+  } catch(err) {
+    console.error(err);
+    toast('Não foi possível concluir: '+(err.message||'verifique as permissões do banco'),true);
+  }
 });
-['search','statusFilter','serviceFilter'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',render));
-$('clearFilters').onclick=()=>{$('search').value='';$('statusFilter').value='';$('serviceFilter').value='';render();};
-$('exportBtn').onclick=()=>{
-  const cols=['id','createdAt','origin','destination','name','phone','email','service','details','status'];
-  const csv=[cols.join(';'),...quotes.map(q=>cols.map(k=>'"'+String(q[k]??'').replace(/"/g,'""')+'"').join(';'))].join('\r\n');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}));
-  a.download='cotacoes-mk-logistica.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+
+['search','statusFilter','serviceFilter'].forEach(id=>{
+  $(id).addEventListener(id==='search'?'input':'change',render);
+});
+
+$('clearFilters').onclick=()=>{
+  $('search').value='';
+  $('statusFilter').value='';
+  $('serviceFilter').value='';
+  render();
 };
-$('connectionState')?.textContent;
+
+$('exportBtn').onclick=()=>{
+  const cols=['id','createdAt','origin','destination','name','phone','email','service','details','status','viewedAt'];
+  const csv=[
+    cols.join(';'),
+    ...quotes.map(q=>cols.map(k=>'"'+String(q[k]??'').replace(/"/g,'""')+'"').join(';'))
+  ].join('\r\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}));
+  a.download='cotacoes-mk-logistica.csv';
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+
+$('connectionState').textContent='Supabase configurado';
 initSession();
 </script>
 </body>
