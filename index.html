@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -5,114 +6,239 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Painel de Cotações | MK Logística Express</title>
 <style>
-:root{--navy:#10243a;--blue:#1769aa;--bg:#f3f6fa;--text:#172536;--muted:#66758a;--line:#e1e8f0;--green:#14804a;--amber:#a65b00}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-header{background:linear-gradient(120deg,#0d2035,#173e61);color:white;padding:24px max(20px,calc((100vw - 1200px)/2));display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:13px}.logo{width:46px;height:46px;border-radius:12px;background:#fff;color:var(--navy);display:grid;place-items:center;font-weight:900;font-size:17px}.brand h1{font-size:20px;margin:0}.brand p{margin:2px 0 0;color:#d4e1ed;font-size:13px}.head-note{font-size:13px;color:#d4e1ed}
-main{max-width:1200px;margin:28px auto;padding:0 20px}.topline{display:flex;justify-content:space-between;align-items:flex-end;gap:15px;flex-wrap:wrap;margin-bottom:20px}.topline h2{margin:0;font-size:27px}.topline p{margin:5px 0 0;color:var(--muted)}
-button,input,select,textarea{font:inherit}button{cursor:pointer;border:0;border-radius:9px;padding:10px 14px;font-weight:700;transition:.15s}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #8dc7f5;outline-offset:2px}.primary{background:var(--blue);color:white}.primary:hover{background:#10568d}.secondary{background:#eaf1f8;color:#193d5e}.success{background:#e1f5e9;color:#126b3c}.danger{background:#fff0f0;color:#a12828}.outline{background:white;border:1px solid var(--line);color:var(--text)}
-.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}.stat{background:white;border:1px solid var(--line);border-radius:14px;padding:17px}.stat span{display:block;color:var(--muted);font-size:13px}.stat strong{display:block;font-size:28px;margin-top:3px}
-.panel{background:white;border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:20px}.filters{display:grid;grid-template-columns:1.5fr 1fr 1fr auto;gap:10px}.field{width:100%;padding:11px 12px;border:1px solid #d5dee8;border-radius:9px;background:white;color:var(--text)}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.form-grid .full{grid-column:1/-1}label{display:block;font-size:13px;font-weight:700;margin-bottom:5px}.section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 14px}.section-title h3{margin:0;font-size:17px}.hint{color:var(--muted);font-size:12px}
-.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.quote{background:white;border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 3px 12px #142b4210;min-width:0}.quote-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.quote-id{font-size:12px;color:var(--muted)}.badge{display:inline-flex;align-items:center;border-radius:99px;padding:5px 9px;font-size:12px;font-weight:800;background:#eaf1f8;color:#36536d}.badge.new{background:#fff0d7;color:#8a4b00}.badge.checked{background:#e1f5e9;color:#126b3c}.route{font-size:18px;font-weight:800;margin:12px 0 15px;overflow-wrap:anywhere}.route span{color:var(--blue);padding:0 5px}.info{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}.info small{display:block;color:var(--muted);font-size:12px}.info strong{display:block;overflow-wrap:anywhere}.description{background:#f6f8fb;border-radius:9px;padding:12px;margin:12px 0;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}.actions{display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:14px}.actions button{font-size:13px}.empty{background:white;border:1px dashed #cbd5e1;border-radius:14px;padding:40px 20px;text-align:center;color:var(--muted);grid-column:1/-1}
-footer{max-width:1200px;padding:0 20px 28px;margin:auto;color:var(--muted);font-size:12px}.modal-backdrop{position:fixed;inset:0;background:#07162599;display:none;align-items:center;justify-content:center;padding:18px;z-index:10}.modal-backdrop.open{display:flex}.modal{background:white;border-radius:16px;padding:22px;width:min(650px,100%);max-height:92vh;overflow:auto}.modal-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:18px}.modal-head h3{margin:0}.x{font-size:22px;padding:3px 10px;background:#f0f3f7}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#10243a;color:white;padding:12px 17px;border-radius:10px;box-shadow:0 8px 25px #0002;display:none;z-index:20;max-width:90%;text-align:center}
-@media(max-width:800px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.cards{grid-template-columns:1fr}.filters{grid-template-columns:1fr 1fr}.filters input{grid-column:1/-1}}
-@media(max-width:520px){main{margin:20px auto;padding:0 12px}.stats{gap:8px}.stat{padding:13px}.stat strong{font-size:24px}.filters,.form-grid{grid-template-columns:1fr}.form-grid .full{grid-column:auto}.quote{padding:15px}.info{grid-template-columns:1fr 1fr}.topline h2{font-size:23px}}
+:root{--navy:#10243a;--blue:#1769aa;--bg:#f3f6fa;--text:#172536;--muted:#66758a;--line:#e1e8f0;--green:#14804a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 Arial,sans-serif}
+header{background:linear-gradient(120deg,#0d2035,#173e61);color:white;padding:22px;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:45px;height:45px;border-radius:10px;background:white;color:var(--navy);display:grid;place-items:center;font-weight:900;font-size:18px}
+h1{font-size:20px;margin:0}
+header p{margin:2px 0;color:#d4e1ed;font-size:13px}
+main{max-width:1200px;margin:25px auto;padding:0 18px}
+.topline,.section-title{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.topline{margin-bottom:20px}
+h2{margin:0;font-size:26px}
+p{margin-top:5px}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:0;border-radius:8px;padding:10px 13px;font-weight:bold}
+.primary{background:var(--blue);color:white}
+.secondary{background:#eaf1f8;color:#193d5e}
+.success{background:#e1f5e9;color:#126b3c}
+.danger{background:#fff0f0;color:#a12828}
+.outline{background:white;border:1px solid var(--line);color:var(--text)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat,.panel,.quote{background:white;border:1px solid var(--line);border-radius:13px;padding:16px}
+.stat span{display:block;color:var(--muted);font-size:13px}
+.stat strong{display:block;font-size:27px}
+.panel{margin-bottom:20px}
+.filters{display:grid;grid-template-columns:1.5fr 1fr 1fr auto;gap:10px}
+.field{width:100%;padding:11px;border:1px solid #d5dee8;border-radius:8px;background:white;color:var(--text)}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.quote{box-shadow:0 3px 12px #142b4210;min-width:0}
+.quote-top{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.quote-id,.hint{font-size:12px;color:var(--muted)}
+.badge{display:inline-block;border-radius:20px;padding:5px 9px;font-size:12px;font-weight:bold;background:#eaf1f8;color:#36536d;margin-top:5px}
+.badge.new{background:#fff0d7;color:#8a4b00}
+.badge.viewed{background:#dceafe;color:#1d4f91}
+.route{font-size:18px;font-weight:bold;margin:15px 0;overflow-wrap:anywhere}
+.route span{color:var(--blue);padding:0 5px}
+.info{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.info small{display:block;color:var(--muted);font-size:12px}
+.info strong{overflow-wrap:anywhere}
+.description{background:#f6f8fb;border-radius:8px;padding:12px;margin:12px 0;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}
+.actions{display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:13px}
+.actions button{font-size:12px}
+.empty{background:white;border:1px dashed #cbd5e1;border-radius:13px;padding:35px;text-align:center;color:var(--muted);grid-column:1/-1}
+footer{max-width:1200px;margin:auto;padding:10px 20px 25px;color:var(--muted);font-size:12px}
+.login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#0d2035,#173e61);display:flex;align-items:center;justify-content:center;padding:20px;z-index:100}
+.login-box{width:min(420px,100%);background:white;border-radius:16px;padding:26px;box-shadow:0 20px 60px #0004}
+.login-box h2{margin:18px 0 5px}
+.login-box label{display:block;font-size:13px;font-weight:bold;margin:13px 0 5px}
+.login-box button{width:100%;margin-top:17px}
+.login-error{display:none;color:#b42318;font-size:13px;margin-top:10px}
+.modal-backdrop{position:fixed;inset:0;background:#07162599;display:none;align-items:center;justify-content:center;padding:15px;z-index:10}
+.modal-backdrop.open{display:flex}
+.modal{background:white;border-radius:15px;padding:22px;width:min(650px,100%);max-height:92vh;overflow:auto}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-grid .full{grid-column:1/-1}
+.form-grid label{display:block;font-size:13px;font-weight:bold;margin-bottom:5px}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:17px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#10243a;color:white;padding:12px 17px;border-radius:9px;display:none;z-index:200;max-width:90%}
+@media(max-width:800px){.stats{grid-template-columns:repeat(2,1fr)}.cards{grid-template-columns:1fr}.filters{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){main{padding:0 12px}.filters,.form-grid{grid-template-columns:1fr}.form-grid .full{grid-column:auto}.stats{gap:8px}.stat{padding:12px}.info{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
-<header>
-  <div class="brand"><div class="logo">MK</div><div><h1>MK Logística Express</h1><p>Painel de cotações de frete</p></div></div>
-  <div class="head-note">Gestão de solicitações recebidas</div>
-</header>
-<main>
-  <div class="topline"><div><h2>Painel de cotações</h2><p>Consulte os pedidos e confirme quando os dados do usuário forem conferidos.</p></div><button class="primary" id="newQuoteBtn">＋ Adicionar cotação</button></div>
-  <section class="stats">
-    <div class="stat"><span>Total de cotações</span><strong id="totalStat">0</strong></div>
-    <div class="stat"><span>Novas</span><strong id="newStat">0</strong></div>
-    <div class="stat"><span>Usuário confirmado</span><strong id="checkedStat">0</strong></div>
-    <div class="stat"><span>Proposta enviada</span><strong id="sentStat">0</strong></div>
-  </section>
-  <section class="panel">
-    <div class="section-title"><h3>Buscar cotações</h3><button class="outline" id="exportBtn">Exportar CSV</button></div>
-    <div class="filters">
-      <input class="field" id="search" placeholder="Buscar nome, telefone, origem ou destino…">
-      <select class="field" id="statusFilter"><option value="">Todos os status</option><option>Nova cotação</option><option>Usuário confirmado</option><option>Proposta enviada</option><option>Fechado</option><option>Perdido</option></select>
-      <select class="field" id="serviceFilter"><option value="">Todos os serviços</option><option>Transporte de cargas</option><option>Transporte fracionado</option><option>Entregas urgentes</option><option>Mudança</option></select>
-      <button class="secondary" id="clearFilters">Limpar filtros</button>
-    </div>
-  </section>
-  <div class="section-title"><h3>Solicitações recebidas</h3><span class="hint" id="resultCount">0 resultados</span></div>
-  <section class="cards" id="cards"></section>
-</main>
-<footer>Versão demonstrativa: os dados ficam salvos apenas neste navegador. Para receber automaticamente os formulários do site e compartilhar cotações entre dispositivos, conecte este painel a um backend/banco de dados com autenticação.</footer>
 
-<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-  <div class="modal"><div class="modal-head"><h3 id="modalTitle">Adicionar cotação</h3><button class="x" id="closeModal" aria-label="Fechar">×</button></div>
-    <form id="quoteForm"><input type="hidden" id="quoteId">
-      <div class="form-grid">
-        <div><label for="origin">Origem *</label><input class="field" id="origin" required placeholder="Cidade/UF"></div>
-        <div><label for="destination">Destino *</label><input class="field" id="destination" required placeholder="Cidade/UF"></div>
-        <div><label for="name">Nome *</label><input class="field" id="name" required></div>
-        <div><label for="phone">Telefone/Celular *</label><input class="field" id="phone" required type="tel" placeholder="DDD + número"></div>
-        <div class="full"><label for="email">E-mail (opcional)</label><input class="field" id="email" type="email"></div>
-        <div class="full"><label for="service">Serviço *</label><select class="field" id="service" required><option value="">Selecione…</option><option>Transporte de cargas</option><option>Transporte fracionado</option><option>Entregas urgentes</option><option>Mudança</option></select></div>
-        <div class="full"><label for="details">Mais informações da carga *</label><textarea class="field" id="details" rows="4" required placeholder="Peso, quantidade, valor, móveis, caixas, medidas e outros detalhes"></textarea></div>
-      </div><p class="hint">* Campos obrigatórios. Ao confirmar usuário, você registra que conferiu os dados de contato; isso não verifica a identidade da pessoa automaticamente.</p>
-      <div class="modal-actions"><button type="button" class="outline" id="cancelModal">Cancelar</button><button type="submit" class="primary">Salvar cotação</button></div>
-    </form>
-  </div>
+<div class="login-screen" id="loginScreen">
+<form class="login-box" id="loginForm">
+<div class="brand"><div class="logo">MK</div><div><strong>MK Logística Express</strong><p>Acesso ao painel</p></div></div>
+<h2>Entrar</h2>
+<p>Faça login para consultar as cotações.</p>
+<label for="loginUser">Usuário</label>
+<input class="field" id="loginUser" autocomplete="username" required>
+<label for="loginPass">Senha</label>
+<input class="field" id="loginPass" type="password" autocomplete="current-password" required>
+<button class="primary" type="submit">Entrar no painel</button>
+<div class="login-error" id="loginError">Usuário ou senha incorretos.</div>
+<p class="hint">Acesso de demonstração: admin / MK2026demo</p>
+</form>
 </div>
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<header>
+<div class="brand"><div class="logo">MK</div><div><h1>MK Logística Express</h1><p>Painel de cotações de frete</p></div></div>
+<div><span id="signedInLabel">Painel administrativo</span> <button class="outline" id="logoutBtn">Sair</button></div>
+</header>
+
+<main>
+<div class="topline">
+<div><h2>Painel de cotações</h2><p>Consulte os pedidos e marque as cotações que você visualizou.</p></div>
+<button class="primary" id="newQuoteBtn">＋ Adicionar cotação</button>
+</div>
+
+<section class="stats">
+<div class="stat"><span>Total de cotações</span><strong id="totalStat">0</strong></div>
+<div class="stat"><span>Novas</span><strong id="newStat">0</strong></div>
+<div class="stat"><span>Visualizadas</span><strong id="viewedStat">0</strong></div>
+<div class="stat"><span>Proposta enviada</span><strong id="sentStat">0</strong></div>
+</section>
+
+<section class="panel">
+<div class="section-title"><h3>Buscar cotações</h3><button class="outline" id="exportBtn">Exportar CSV</button></div>
+<div class="filters">
+<input class="field" id="search" placeholder="Buscar nome, telefone, origem ou destino">
+<select class="field" id="statusFilter">
+<option value="">Todos os status</option>
+<option>Nova cotação</option><option>Usuário confirmado</option><option>Proposta enviada</option><option>Fechado</option><option>Perdido</option>
+</select>
+<select class="field" id="serviceFilter">
+<option value="">Todos os serviços</option>
+<option>Transporte de cargas</option><option>Transporte fracionado</option><option>Entregas urgentes</option><option>Mudança</option>
+</select>
+<button class="secondary" id="clearFilters">Limpar filtros</button>
+</div>
+</section>
+
+<div class="section-title"><h3>Solicitações recebidas</h3><span class="hint" id="resultCount"></span></div>
+<section class="cards" id="cards"></section>
+</main>
+
+<footer>
+Esta versão guarda as cotações somente neste navegador. O login é demonstrativo, não protege dados reais contra acesso público. Para receber formulários do site e sincronizar dispositivos, conecte a um banco de dados com autenticação segura.
+</footer>
+
+<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true">
+<div class="modal">
+<div class="modal-head"><h3 id="modalTitle">Adicionar cotação</h3><button class="outline" id="closeModal">Fechar ×</button></div>
+<form id="quoteForm">
+<input type="hidden" id="quoteId">
+<div class="form-grid">
+<div><label for="origin">Origem *</label><input class="field" id="origin" required placeholder="Cidade/UF"></div>
+<div><label for="destination">Destino *</label><input class="field" id="destination" required placeholder="Cidade/UF"></div>
+<div><label for="name">Nome *</label><input class="field" id="name" required></div>
+<div><label for="phone">Telefone/Celular *</label><input class="field" id="phone" required type="tel"></div>
+<div class="full"><label for="email">E-mail (opcional)</label><input class="field" id="email" type="email"></div>
+<div class="full"><label for="service">Serviço *</label><select class="field" id="service" required><option value="">Selecione</option><option>Transporte de cargas</option><option>Transporte fracionado</option><option>Entregas urgentes</option><option>Mudança</option></select></div>
+<div class="full"><label for="details">Mais informações da carga *</label><textarea class="field" id="details" rows="4" required placeholder="Peso, quantidade, valor, móveis, caixas e outros detalhes"></textarea></div>
+</div>
+<p class="hint">O botão de visualização registra a data em que você marcou a cotação como vista.</p>
+<div class="modal-actions"><button type="button" class="outline" id="cancelModal">Cancelar</button><button type="submit" class="primary">Salvar cotação</button></div>
+</form>
+</div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
 <script>
-const STORAGE_KEY='mk_logistica_cotacoes_v1';
+const STORAGE_KEY='mk_logistica_cotacoes_v2';
+const DEMO_USER='admin';
+const DEMO_PASS='MK2026demo';
+const AUTH_KEY='mk_logistica_logged_in';
 const demoQuotes=[
-{id:'MK-1001',origin:'São Paulo, SP',destination:'Belo Horizonte, MG',name:'Cliente demonstração',phone:'5511999999999',email:'cliente@example.com',service:'Mudança',details:'Exemplo: 15 caixas, sofá, cama e guarda-roupa. Substitua ou apague esta cotação de demonstração.',status:'Nova cotação',createdAt:new Date().toISOString(),confirmedAt:null},
-{id:'MK-1002',origin:'Campinas, SP',destination:'Curitiba, PR',name:'Empresa exemplo',phone:'5511988887777',email:'',service:'Transporte fracionado',details:'Exemplo: 8 volumes; peso e valor a confirmar com o cliente.',status:'Usuário confirmado',createdAt:new Date(Date.now()-86400000).toISOString(),confirmedAt:new Date().toISOString()}
+{id:'MK-1001',origin:'São Paulo, SP',destination:'Belo Horizonte, MG',name:'Cliente demonstração',phone:'5511999999999',email:'cliente@example.com',service:'Mudança',details:'Exemplo: 15 caixas, sofá, cama e guarda-roupa. Apague esta cotação de demonstração.',status:'Nova cotação',createdAt:new Date().toISOString(),viewedAt:null,confirmedAt:null},
+{id:'MK-1002',origin:'Campinas, SP',destination:'Curitiba, PR',name:'Empresa exemplo',phone:'5511988887777',email:'',service:'Transporte fracionado',details:'Exemplo: 8 volumes; peso e valor a confirmar.',status:'Usuário confirmado',createdAt:new Date(Date.now()-86400000).toISOString(),viewedAt:new Date().toISOString(),confirmedAt:new Date().toISOString()}
 ];
 let quotes=[];
-try{const saved=localStorage.getItem(STORAGE_KEY);quotes=saved?JSON.parse(saved):demoQuotes; if(!saved)localStorage.setItem(STORAGE_KEY,JSON.stringify(quotes));}catch(e){quotes=demoQuotes;}
+try{const saved=localStorage.getItem(STORAGE_KEY);quotes=saved?JSON.parse(saved):demoQuotes;if(!saved)localStorage.setItem(STORAGE_KEY,JSON.stringify(quotes));}catch(e){quotes=demoQuotes}
 const $=id=>document.getElementById(id);
-function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(quotes));render();}
-function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function statusClass(s){return s==='Usuário confirmado'?'checked':s==='Nova cotação'?'new':''}
-function formatDate(d){try{return new Intl.DateTimeFormat('pt-BR',{dateStyle:'short',timeStyle:'short'}).format(new Date(d));}catch{return '—'}}
-function toast(msg){$('toast').textContent=msg;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',2800)}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function formatDate(d){try{return new Intl.DateTimeFormat('pt-BR',{dateStyle:'short',timeStyle:'short'}).format(new Date(d))}catch{return '—'}}
+function toast(msg){$('toast').textContent=msg;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',2500)}
+function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(quotes));render()}
+function showPanel(){$('loginScreen').style.display='none';$('signedInLabel').textContent='Conectado: admin'}
+function showLogin(){$('loginScreen').style.display='flex'}
+if(sessionStorage.getItem(AUTH_KEY)==='yes')showPanel();else showLogin();
+
+$('loginForm').addEventListener('submit',e=>{
+e.preventDefault();
+if($('loginUser').value.trim()===DEMO_USER&&$('loginPass').value===DEMO_PASS){
+sessionStorage.setItem(AUTH_KEY,'yes');$('loginError').style.display='none';showPanel();toast('Login realizado.');
+}else{$('loginError').style.display='block'}
+});
+$('logoutBtn').onclick=()=>{sessionStorage.removeItem(AUTH_KEY);$('loginPass').value='';showLogin()};
+
 function render(){
- const total=quotes.length, fresh=quotes.filter(q=>q.status==='Nova cotação').length, checked=quotes.filter(q=>q.status==='Usuário confirmado').length, sent=quotes.filter(q=>q.status==='Proposta enviada').length;
- $('totalStat').textContent=total;$('newStat').textContent=fresh;$('checkedStat').textContent=checked;$('sentStat').textContent=sent;
- const term=$('search').value.toLocaleLowerCase('pt-BR'), status=$('statusFilter').value, service=$('serviceFilter').value;
- const list=quotes.filter(q=>(!status||q.status===status)&&(!service||q.service===service)&&[q.id,q.origin,q.destination,q.name,q.phone,q.email,q.service,q.details].join(' ').toLocaleLowerCase('pt-BR').includes(term));
- $('resultCount').textContent=`${list.length} resultado(s)`;
- $('cards').innerHTML=list.length?list.map(q=>`<article class="quote">
-  <div class="quote-top"><div><div class="quote-id">${esc(q.id)} · ${esc(formatDate(q.createdAt))}</div><span class="badge ${statusClass(q.status)}">${esc(q.status)}</span></div><button class="outline" data-action="edit" data-id="${esc(q.id)}">Editar</button></div>
-  <div class="route">${esc(q.origin)} <span>→</span> ${esc(q.destination)}</div>
-  <div class="info"><div><small>Nome do cliente</small><strong>${esc(q.name)}</strong></div><div><small>Telefone/Celular</small><strong>${esc(q.phone)}</strong></div><div><small>E-mail</small><strong>${esc(q.email||'Não informado')}</strong></div><div><small>Serviço</small><strong>${esc(q.service)}</strong></div></div>
-  <div class="description"><strong>Informações da carga</strong><br>${esc(q.details)}</div>
-  ${q.confirmedAt?`<p class="hint">Usuário conferido em ${esc(formatDate(q.confirmedAt))}</p>`:''}
-  <div class="actions">
-   ${q.status!=='Usuário confirmado'?`<button class="success" data-action="confirm" data-id="${esc(q.id)}">✓ Confirmar usuário</button>`:`<button class="secondary" data-action="unconfirm" data-id="${esc(q.id)}">Desfazer confirmação</button>`}
-   <button class="secondary" data-action="whatsapp" data-id="${esc(q.id)}">Abrir WhatsApp</button>
-   <button class="outline" data-action="status" data-id="${esc(q.id)}">Alterar status</button>
-   <button class="danger" data-action="delete" data-id="${esc(q.id)}">Excluir</button>
-  </div></article>`).join(''):'<div class="empty"><strong>Nenhuma cotação encontrada.</strong><br>Altere os filtros ou adicione uma cotação.</div>';
+$('totalStat').textContent=quotes.length;
+$('newStat').textContent=quotes.filter(q=>q.status==='Nova cotação').length;
+$('viewedStat').textContent=quotes.filter(q=>q.viewedAt).length;
+$('sentStat').textContent=quotes.filter(q=>q.status==='Proposta enviada').length;
+const term=$('search').value.toLocaleLowerCase('pt-BR'),status=$('statusFilter').value,service=$('serviceFilter').value;
+const list=quotes.filter(q=>(!status||q.status===status)&&(!service||q.service===service)&&[q.id,q.origin,q.destination,q.name,q.phone,q.email,q.service,q.details].join(' ').toLocaleLowerCase('pt-BR').includes(term));
+$('resultCount').textContent=list.length+' resultado(s)';
+$('cards').innerHTML=list.length?list.map(q=>`<article class="quote">
+<div class="quote-top"><div><div class="quote-id">${esc(q.id)} · ${esc(formatDate(q.createdAt))}</div><span class="badge ${q.status==='Nova cotação'?'new':''}">${esc(q.status)}</span>${q.viewedAt?'<span class="badge viewed">Cotação visualizada</span>':''}</div><button class="outline" data-action="edit" data-id="${esc(q.id)}">Editar</button></div>
+<div class="route">${esc(q.origin)} <span>→</span> ${esc(q.destination)}</div>
+<div class="info"><div><small>Nome do cliente</small><strong>${esc(q.name)}</strong></div><div><small>Telefone/Celular</small><strong>${esc(q.phone)}</strong></div><div><small>E-mail</small><strong>${esc(q.email||'Não informado')}</strong></div><div><small>Serviço</small><strong>${esc(q.service)}</strong></div></div>
+<div class="description"><strong>Informações da carga</strong><br>${esc(q.details)}</div>
+${q.viewedAt?`<p class="hint">Visualizada em ${esc(formatDate(q.viewedAt))}</p>`:''}
+${q.confirmedAt?`<p class="hint">Dados do usuário conferidos em ${esc(formatDate(q.confirmedAt))}</p>`:''}
+<div class="actions">
+${!q.viewedAt?`<button class="success" data-action="viewed" data-id="${esc(q.id)}">✓ Confirmar que vi a cotação</button>`:`<button class="secondary" data-action="unviewed" data-id="${esc(q.id)}">Marcar como não vista</button>`}
+${q.status!=='Usuário confirmado'?`<button class="outline" data-action="confirm" data-id="${esc(q.id)}">Conferir dados do usuário</button>`:`<button class="secondary" data-action="unconfirm" data-id="${esc(q.id)}">Desfazer conferência</button>`}
+<button class="secondary" data-action="whatsapp" data-id="${esc(q.id)}">Abrir WhatsApp</button>
+<button class="outline" data-action="status" data-id="${esc(q.id)}">Alterar status</button>
+<button class="danger" data-action="delete" data-id="${esc(q.id)}">Excluir</button>
+</div></article>`).join(''):'<div class="empty">Nenhuma cotação encontrada.</div>';
 }
-function openModal(q){$('quoteForm').reset();$('quoteId').value=q?.id||'';$('modalTitle').textContent=q?'Editar cotação':'Adicionar cotação';
- ['origin','destination','name','phone','email','service','details'].forEach(k=>$(k).value=q?.[k]||'');$('modalBackdrop').classList.add('open');$('origin').focus();}
+function openModal(q){
+$('quoteForm').reset();$('quoteId').value=q?.id||'';$('modalTitle').textContent=q?'Editar cotação':'Adicionar cotação';
+['origin','destination','name','phone','email','service','details'].forEach(k=>$(k).value=q?.[k]||'');
+$('modalBackdrop').classList.add('open')
+}
 function closeModal(){$('modalBackdrop').classList.remove('open')}
-$('newQuoteBtn').onclick=()=>openModal();$('closeModal').onclick=closeModal;$('cancelModal').onclick=closeModal;
+$('newQuoteBtn').onclick=()=>openModal();
+$('closeModal').onclick=closeModal;
+$('cancelModal').onclick=closeModal;
 $('modalBackdrop').addEventListener('click',e=>{if(e.target===$('modalBackdrop'))closeModal()});
-$('quoteForm').addEventListener('submit',e=>{e.preventDefault();const id=$('quoteId').value;const old=quotes.find(q=>q.id===id);const q={id:id||`MK-${String(Date.now()).slice(-6)}`,origin:$('origin').value.trim(),destination:$('destination').value.trim(),name:$('name').value.trim(),phone:$('phone').value.trim(),email:$('email').value.trim(),service:$('service').value,details:$('details').value.trim(),status:old?.status||'Nova cotação',createdAt:old?.createdAt||new Date().toISOString(),confirmedAt:old?.confirmedAt||null};quotes=old?quotes.map(x=>x.id===id?q:x):[q,...quotes];save();closeModal();toast(old?'Cotação atualizada.':'Cotação adicionada.');});
-$('cards').addEventListener('click',e=>{const b=e.target.closest('button[data-action]');if(!b)return;const q=quotes.find(x=>x.id===b.dataset.id);if(!q)return;switch(b.dataset.action){
+
+$('quoteForm').addEventListener('submit',e=>{
+e.preventDefault();
+const id=$('quoteId').value,old=quotes.find(q=>q.id===id);
+const q={id:id||'MK-'+String(Date.now()).slice(-6),origin:$('origin').value.trim(),destination:$('destination').value.trim(),name:$('name').value.trim(),phone:$('phone').value.trim(),email:$('email').value.trim(),service:$('service').value,details:$('details').value.trim(),status:old?.status||'Nova cotação',createdAt:old?.createdAt||new Date().toISOString(),viewedAt:old?.viewedAt||null,confirmedAt:old?.confirmedAt||null};
+quotes=old?quotes.map(x=>x.id===id?q:x):[q,...quotes];save();closeModal();toast(old?'Cotação atualizada.':'Cotação adicionada.');
+});
+
+$('cards').addEventListener('click',e=>{
+const b=e.target.closest('button[data-action]');if(!b)return;
+const q=quotes.find(x=>x.id===b.dataset.id);if(!q)return;
+switch(b.dataset.action){
 case'edit':openModal(q);break;
-case'confirm':q.status='Usuário confirmado';q.confirmedAt=new Date().toISOString();save();toast('Usuário marcado como conferido.');break;
-case'unconfirm':q.status='Nova cotação';q.confirmedAt=null;save();toast('Confirmação desfeita.');break;
-case'whatsapp':{const digits=q.phone.replace(/\D/g,'');if(!digits){toast('Telefone não informado.');break;}const msg=`Olá, ${q.name}! Aqui é da MK Logística Express. Recebemos sua solicitação de ${q.service}, de ${q.origin} para ${q.destination}. Gostaríamos de confirmar os detalhes da carga: ${q.details}`;window.open(`https://wa.me/${digits}?text=${encodeURIComponent(msg)}`,'_blank','noopener');break;}
-case'status':{const opts=['Nova cotação','Usuário confirmado','Proposta enviada','Fechado','Perdido'];const n=prompt('Digite o novo status:\\n'+opts.join('\\n'),q.status);if(n&&opts.includes(n)){q.status=n;if(n==='Usuário confirmado'&&!q.confirmedAt)q.confirmedAt=new Date().toISOString();if(n!=='Usuário confirmado')q.confirmedAt=null;save();toast('Status atualizado.');}else if(n)toast('Status inválido.');break;}
-case'delete':if(confirm(`Excluir a cotação ${q.id} de ${q.name}?`)){quotes=quotes.filter(x=>x.id!==q.id);save();toast('Cotação excluída.');}break;
-}});
+case'viewed':q.viewedAt=new Date().toISOString();save();toast('Cotação marcada como visualizada.');break;
+case'unviewed':q.viewedAt=null;save();toast('Cotação marcada como não vista.');break;
+case'confirm':q.status='Usuário confirmado';q.confirmedAt=new Date().toISOString();save();toast('Dados do usuário conferidos.');break;
+case'unconfirm':q.status='Nova cotação';q.confirmedAt=null;save();toast('Conferência desfeita.');break;
+case'whatsapp':{const digits=q.phone.replace(/\D/g,'');if(!digits){toast('Telefone não informado.');break}const msg=`Olá, ${q.name}! Aqui é da MK Logística Express. Recebemos sua solicitação de ${q.service}, de ${q.origin} para ${q.destination}. Gostaríamos de confirmar os detalhes da carga: ${q.details}`;window.open('https://wa.me/'+digits+'?text='+encodeURIComponent(msg),'_blank');break}
+case'status':{const opts=['Nova cotação','Usuário confirmado','Proposta enviada','Fechado','Perdido'];const n=prompt('Digite exatamente um status:\n'+opts.join('\n'),q.status);if(n&&opts.includes(n)){q.status=n;if(n==='Usuário confirmado'&&!q.confirmedAt)q.confirmedAt=new Date().toISOString();if(n!=='Usuário confirmado')q.confirmedAt=null;save();toast('Status atualizado.')}else if(n)toast('Status inválido.');break}
+case'delete':if(confirm('Excluir a cotação '+q.id+' de '+q.name+'?')){quotes=quotes.filter(x=>x.id!==q.id);save();toast('Cotação excluída.')}break
+}
+});
 ['search','statusFilter','serviceFilter'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',render));
 $('clearFilters').onclick=()=>{$('search').value='';$('statusFilter').value='';$('serviceFilter').value='';render()};
-$('exportBtn').onclick=()=>{const cols=['id','createdAt','origin','destination','name','phone','email','service','details','status','confirmedAt'];const csv=[cols.join(';'),...quotes.map(q=>cols.map(k=>'"'+String(q[k]??'').replace(/"/g,'""')+'"').join(';'))].join('\r\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}));a.download='cotacoes-mk-logistica.csv';a.click();URL.revokeObjectURL(a.href)};
+$('exportBtn').onclick=()=>{
+const cols=['id','createdAt','origin','destination','name','phone','email','service','details','status','viewedAt','confirmedAt'];
+const csv=[cols.join(';'),...quotes.map(q=>cols.map(k=>'"'+String(q[k]??'').replace(/"/g,'""')+'"').join(';'))].join('\r\n');
+const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}));a.download='cotacoes-mk-logistica.csv';a.click();URL.revokeObjectURL(a.href)
+};
 render();
 </script>
 </body>
