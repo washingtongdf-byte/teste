@@ -408,4 +408,430 @@ function render() {
   const list=quotes.filter(q=>
     (!status||q.status===status)&&
     (!service||q.service===service)&&
-    [q.id,q.or
+    [q.id,q.origin,q.destination,q.name,q.phone,q.email,q.service,q.details]
+      .join(' ').toLocaleLowerCase('pt-BR').includes(term)
+  );
+
+  $('resultCount').textContent=list.length+' resultado(s)';
+
+  $('cards').innerHTML=list.length?list.map(q=>`
+    <article class="quote">
+      <div class="quote-top">
+        <div>
+          <div class="quote-id">${esc(q.id)} · ${esc(formatDate(q.createdAt))}</div>
+          <span class="badge ${q.status==='Nova cotação'?'new':q.status==='Fechado'?'closed':''}">${esc(q.status)}</span>
+          ${q.viewedAt?'<span class="badge viewed">Visualizada</span>':''}
+        </div>
+        <button class="outline" data-action="edit" data-id="${esc(q.dbId)}">Editar</button>
+      </div>
+      <div class="route">${esc(q.origin)} <span>→</span> ${esc(q.destination)}</div>
+      <div class="info">
+        <div><small>Nome do cliente</small><strong>${esc(q.name)}</strong></div>
+        <div><small>Telefone/Celular</small><strong>${esc(q.phone)}</strong></div>
+        <div><small>E-mail</small><strong>${esc(q.email||'Não informado')}</strong></div>
+        <div><small>Serviço</small><strong>${esc(q.service)}</strong></div>
+      </div>
+      <div class="description"><strong>Informações da carga</strong><br>${esc(q.details)}</div>
+      ${q.viewedAt?`<p class="hint">Visualizada em ${esc(formatDate(q.viewedAt))}</p>`:''}
+      <div class="actions">
+        ${!q.viewedAt?`<button class="success" data-action="viewed" data-id="${esc(q.dbId)}">✓ Confirmar que vi</button>`:`<button class="secondary" data-action="unviewed" data-id="${esc(q.dbId)}">Marcar não vista</button>`}
+        <button class="secondary" data-action="whatsapp" data-id="${esc(q.dbId)}">Abrir WhatsApp</button>
+        <button class="primary" data-action="proposal" data-id="${esc(q.dbId)}">📄 Gerar proposta PDF</button>
+        <button class="outline" data-action="status" data-id="${esc(q.dbId)}">Alterar status</button>
+        <button class="danger" data-action="delete" data-id="${esc(q.dbId)}">Excluir</button>
+      </div>
+    </article>
+  `).join(''):'<div class="empty"><strong>Nenhuma cotação encontrada</strong>Quando houver pedidos no banco, eles aparecerão aqui. Você também pode adicionar uma cotação manualmente.</div>';
+}
+
+function gerarPropostaPDF(q) {
+  document.getElementById('proposalFormOverlay')?.remove();
+  const overlay = document.createElement('div');
+  overlay.id = 'proposalFormOverlay';
+  overlay.innerHTML = `
+    <div class="proposal-modal" role="dialog" aria-modal="true" aria-labelledby="proposalFormTitle">
+      <div class="proposal-modal-head"><div><span class="proposal-kicker">MK LOGÍSTICA EXPRESS</span><h2 id="proposalFormTitle">Gerar proposta comercial</h2><p>Preencha os dados abaixo. A proposta será aberta para salvar como PDF.</p></div><button type="button" class="proposal-close" id="proposalFormClose" aria-label="Fechar">×</button></div>
+      <form id="proposalForm">
+        <div class="proposal-fields">
+          <label>Valor total do frete (R$)<input name="frete" inputmode="decimal" placeholder="Ex.: 2.500,00" required></label>
+          <label>Prazo estimado de entrega<input name="prazo" value="4 a 6 dias úteis" required></label>
+          <label>Quantidade de volumes<input name="volumes" value="Não informado"></label>
+          <label>Tipo de carga<input name="tipoCarga" value="${esc(q.service || 'Transporte de cargas')}"></label>
+          <label>Peso aproximado<input name="peso" placeholder="Ex.: 350 kg" value="Não informado"></label>
+          <label>Distância<input name="distancia" placeholder="Ex.: 450 km" value="Não informado"></label>
+          <label>Quantidade de ajudantes<input name="ajudantes" type="number" min="0" value="0"></label>
+          <label>Validade da proposta<input name="validade" value="7 dias corridos" required></label>
+          <label class="proposal-full">Observações<textarea name="observacoes" rows="3">${esc(q.details || 'Não informado')}</textarea></label>
+        </div>
+        <div class="proposal-payment-preview"><strong>Forma de pagamento automática</strong><p>Pix no momento da coleta ou cartão de crédito em até 10 vezes, com juros da maquininha, por link de pagamento.</p></div>
+        <div class="proposal-modal-actions"><button type="button" class="proposal-cancel" id="proposalFormCancel">Cancelar</button><button type="submit" class="proposal-submit">Gerar e baixar PDF</button></div>
+      </form>
+    </div>`;
+  const style = document.createElement('style');
+  style.textContent = `#proposalFormOverlay{position:fixed;inset:0;z-index:99999;background:rgba(9,23,40,.72);display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto;font-family:Arial,sans-serif}#proposalFormOverlay *{box-sizing:border-box}.proposal-modal{background:#fff;color:#14263a;width:min(760px,100%);max-height:95vh;overflow:auto;border-radius:16px;box-shadow:0 24px 80px #0005}.proposal-modal-head{display:flex;justify-content:space-between;gap:16px;padding:24px 26px 18px;border-bottom:1px solid #e5eaf0}.proposal-kicker{font-size:11px;font-weight:800;letter-spacing:1.5px;color:#b77908}.proposal-modal-head h2{margin:7px 0;font-size:23px}.proposal-modal-head p{margin:0;color:#64748b;font-size:13px}.proposal-close{border:0;background:#edf2f7;color:#20364b;border-radius:9px;font-size:26px;width:40px;height:40px;cursor:pointer;flex-shrink:0}.proposal-fields{display:grid;grid-template-columns:1fr 1fr;gap:15px;padding:22px 26px}.proposal-fields label{display:flex;flex-direction:column;gap:7px;font-size:12px;font-weight:700;color:#34475b}.proposal-fields input,.proposal-fields textarea{width:100%;padding:11px 12px;border:1px solid #cbd5e1;border-radius:8px;font:14px Arial;color:#14263a;background:#fff;outline:none}.proposal-fields input:focus,.proposal-fields textarea:focus{border-color:#1769aa;box-shadow:0 0 0 3px #1769aa1c}.proposal-full{grid-column:1/-1}.proposal-payment-preview{margin:0 26px 20px;padding:14px 16px;background:#f3f7fb;border-left:4px solid #e5a21a;border-radius:7px}.proposal-payment-preview strong{font-size:12px}.proposal-payment-preview p{font-size:12px;line-height:1.5;margin:6px 0 0;color:#4b5d70}.proposal-modal-actions{display:flex;justify-content:flex-end;gap:10px;padding:16px 26px 24px;border-top:1px solid #e5eaf0}.proposal-modal-actions button{padding:12px 18px;border:0;border-radius:8px;font-weight:800;cursor:pointer}.proposal-cancel{background:#edf2f7;color:#334155}.proposal-submit{background:#10243a;color:white}.proposal-submit:hover{background:#1769aa}@media(max-width:560px){.proposal-fields{grid-template-columns:1fr;padding:18px}.proposal-full{grid-column:auto}.proposal-modal-head{padding:20px 18px}.proposal-modal-head h2{font-size:20px}.proposal-payment-preview{margin:0 18px 18px}.proposal-modal-actions{padding:15px 18px 20px}.proposal-modal-actions button{flex:1}}`;
+  overlay.appendChild(style);
+  document.body.appendChild(overlay);
+  const close = () => overlay.remove();
+  overlay.querySelector('#proposalFormClose').onclick = close;
+  overlay.querySelector('#proposalFormCancel').onclick = close;
+  overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+  overlay.querySelector('#proposalForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const dados = Object.fromEntries(new FormData(e.currentTarget).entries());
+    if (!String(dados.frete || '').trim()) { alert('Informe o valor do frete.'); return; }
+    close();
+    gerarPropostaPDFComDados(q, dados);
+  });
+  overlay.querySelector('input[name="frete"]').focus();
+}
+
+function gerarPropostaPDFComDados(q, dados) {
+  const frete = dados.frete;
+  const prazo = dados.prazo || 'A combinar';
+  const pagamento = 'Olá! Para sua comodidade, o pagamento do serviço pode ser feito via Pix diretamente no momento da coleta.\n\nCaso prefira parcelar, disponibilizamos a opção de pagamento em até 10 vezes no cartão de crédito (com acréscimo de juros da maquininha) através de um link de pagamento enviado por aqui.\n\nQualquer dúvida, estamos por aqui para ajudar!';
+  const volumes = dados.volumes || 'Não informado';
+  const tipoCarga = dados.tipoCarga || q.service || 'Transporte de cargas';
+  const peso = dados.peso || 'Não informado';
+  const distancia = dados.distancia || 'Não informado';
+  const ajudantes = dados.ajudantes || '0';
+  const observacoes = dados.observacoes || 'Não informado';
+  const validade = dados.validade || '7 dias corridos';
+
+  function moedaParaNumero(valor) {
+    const texto = String(valor).trim().replace(/\s/g, '').replace(/\./g, '').replace(',', '.');
+    const n = Number(texto);
+    return Number.isFinite(n) && n >= 0 ? n : 0;
+  }
+  function dinheiro(valor) {
+    return valor.toLocaleString('pt-BR', {style:'currency',currency:'BRL'});
+  }
+  const total = moedaParaNumero(frete);
+  const numero = 'PROP-' + new Date().getFullYear() + '-' + Date.now().toString().slice(-8);
+  const data = new Date().toLocaleDateString('pt-BR');
+  const emailEmpresa = 'comercial@mklogisticaexpress.com.br';
+  const clauses = [
+    'O CLIENTE deve informar antecipadamente se precisará de carga e descarga manual ou mecânica, pois poderá haver cobrança à parte.',
+    'O CLIENTE deve informar à TRANSPORTADORA sobre materiais frágeis presentes no frete e, quando aplicável, preencher a carta de isenção assumindo os riscos dos materiais.',
+    'Coletas e entregas em área rural e/ou fazenda devem ser informadas no ato da contratação. Caso não sejam informadas, poderão ocorrer cancelamento da proposta ou cobrança adicional.',
+    'Caso não seja possível realizar a entrega por motivo decorrente do CLIENTE, poderá ser cobrado armazenamento conforme período e condições da operação.',
+    'Caso o CLIENTE necessite que a mercadoria seja devolvida ao local de origem, poderá ser cobrado novo frete.',
+    'Poderá ser cobrada taxa de reentrega quando uma tentativa não for concluída por motivo atribuível ao CLIENTE, destinatário ou às condições informadas.',
+    'Taxa de dificuldade ou permanência poderá ser cobrada quando o veículo permanecer no local além do período operacional previsto.',
+    'Os custos poderão sofrer alterações caso mudem as especificações, quantidade, medidas, peso, valor de nota fiscal ou outras características relevantes da carga.',
+    'Problemas relacionados a nota fiscal, impostos, documentação ou informações fiscais serão de responsabilidade do responsável pelo frete.',
+    'O prazo de entrega inicia após a coleta e o cumprimento das condições de pagamento acordadas, salvo acordo diferente por escrito.'
+  ];
+  const escLocal = v => esc(String(v ?? 'Não informado'));
+  const header = `<header class="page-header"><div class="brand"><div class="logo">MK</div><div><strong>MK Logística Express</strong><small>LOGÍSTICA • TRANSPORTE • EXPRESS</small></div></div><div class="doc-title"><strong>PROPOSTA COMERCIAL</strong><span>Nº ${escLocal(numero)}</span><span>${escLocal(data)}</span></div></header>`;
+  const footer = n => `<footer class="page-footer"><span>MK Logística Express · ${escLocal(emailEmpresa)}</span><span>Página ${n} de 3</span></footer>`;
+  const documento = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proposta Comercial ${escLocal(numero)} | MK Logística Express</title>
+<style>
+*{box-sizing:border-box}
+@page{size:A4;margin:0}
+html,body{margin:0;padding:0;background:#edf1f5;color:#172536;font-family:Arial,Helvetica,sans-serif;font-size:10.5pt;line-height:1.45}
+.toolbar{position:sticky;top:0;z-index:10;display:flex;justify-content:center;gap:10px;padding:12px;background:#10243a}
+button{border:0;border-radius:7px;padding:11px 17px;font-weight:bold;cursor:pointer;background:#1769aa;color:#fff}
+button.secondary{background:#e7eef5;color:#10243a}
+.page{position:relative;width:210mm;min-height:297mm;margin:12px auto;background:#fff;padding:17mm 17mm 20mm;box-shadow:0 4px 20px #0001;page-break-after:always;break-after:page}
+.page:last-of-type{page-break-after:auto;break-after:auto}
+.page-header{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:2px solid #e5a21a;padding-bottom:12px;margin-bottom:20px}
+.brand{display:flex;align-items:center;gap:10px;color:#10243a}
+.logo{width:43px;height:43px;border-radius:8px;background:#10243a;border-bottom:4px solid #f59e0b;color:#fff;display:grid;place-items:center;font-size:18px;font-weight:900}
+.brand strong{display:block;font-size:15px}.brand small{display:block;font-size:8px;letter-spacing:1px;color:#60748a;margin-top:3px}
+.doc-title{text-align:right;font-size:9px;color:#52677c}.doc-title strong{display:block;font-size:11px;color:#1769aa}.doc-title span{display:block;margin-top:2px}
+.section-title{font-size:12px;letter-spacing:.5px;color:#10243a;font-weight:800;margin:18px 0 10px;padding:8px 10px;border-left:4px solid #f59e0b;background:#f4f7fa}
+.intro{margin:14px 0 18px;color:#3b4d60}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px 18px}
+.field{border-bottom:1px solid #e1e8f0;padding:7px 2px;min-height:43px}
+.label{display:block;color:#64748b;font-size:8px;letter-spacing:.6px;text-transform:uppercase;margin-bottom:3px;font-weight:bold}
+.value{font-size:10px;font-weight:700;overflow-wrap:anywhere}
+.full{grid-column:1/-1}
+.route-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px}
+.route-box{background:#f3f7fb;border:1px solid #e1e8f0;border-radius:7px;padding:12px}
+.route-box .value{font-size:11px}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th{background:#eaf0f6;color:#344b61;text-transform:uppercase;font-size:8px;letter-spacing:.4px;text-align:left}
+th,td{padding:10px;border-bottom:1px solid #dfe6ed;vertical-align:top}
+.amount{text-align:right;font-weight:800;white-space:nowrap}
+.summary{margin-top:22px;padding:16px;background:#10243a;color:#fff;border-radius:7px;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+.summary small{display:block;color:#d3dfeb;font-size:8px;letter-spacing:.6px}.summary strong{font-size:19px}
+.slogan{text-align:center;color:#1769aa;font-weight:bold;font-style:italic;margin-top:20px}
+ul.payment{padding-left:18px;margin:8px 0}ul.payment li{margin:9px 0}
+.clauses{padding-left:20px;margin:8px 0}.clauses li{padding-left:3px;margin:0 0 11px;text-align:justify}
+.validity{margin-top:18px;padding:12px;background:#f4f7fa;border-radius:6px}
+.page-footer{position:absolute;bottom:9mm;left:17mm;right:17mm;border-top:1px solid #dfe6ed;padding-top:7px;display:flex;justify-content:space-between;gap:10px;color:#64748b;font-size:8px}
+@media screen and (max-width:700px){.page{width:100%;min-height:auto;margin:0;padding:22px 18px 65px;box-shadow:none}.page-header{align-items:flex-start}.brand strong{font-size:12px}.doc-title{font-size:8px}.route-grid{grid-template-columns:1fr}.page-footer{left:18px;right:18px;bottom:18px}.toolbar{position:static}}
+@media print{html,body{background:#fff}.toolbar{display:none!important}.page{margin:0;width:210mm;height:297mm;min-height:297mm;box-shadow:none;padding:17mm 17mm 20mm;overflow:hidden}.page-footer{bottom:9mm}.page:last-of-type{page-break-after:auto}}
+</style>
+</head>
+<body>
+<div class="toolbar"><button class="secondary" onclick="window.close()">Fechar</button><button onclick="window.print()">Imprimir / Salvar como PDF</button></div>
+
+<section class="page">
+${header}
+<div class="section-title">DADOS DA PROPOSTA</div>
+<div class="grid">
+<div class="field"><span class="label">Cliente</span><div class="value">${escLocal(q.name)}</div></div>
+<div class="field"><span class="label">Documento</span><div class="value">Não informado</div></div>
+<div class="field"><span class="label">E-mail</span><div class="value">${escLocal(q.email || 'Não informado')}</div></div>
+<div class="field"><span class="label">Telefone</span><div class="value">${escLocal(q.phone || 'Não informado')}</div></div>
+</div>
+<div class="intro">Segue a proposta de serviço de transporte para apreciação, contendo as condições operacionais, valores, formas de pagamento e cláusulas aplicáveis ao serviço contratado.</div>
+<div class="section-title">1. ESCOPO DO SERVIÇO</div>
+<div style="font-weight:700;margin:10px 0 4px">1.1. Especificação da carga</div>
+<table><thead><tr><th>Nº volumes</th><th>Tipo de carga</th><th>Peso</th></tr></thead><tbody><tr><td>${escLocal(volumes)}</td><td>${escLocal(tipoCarga)}</td><td>${escLocal(peso)}</td></tr></tbody></table>
+<table><thead><tr><th>Distância</th><th>Prazo</th><th>Ajudantes</th></tr></thead><tbody><tr><td>${escLocal(distancia)}</td><td>${escLocal(prazo)}</td><td>${escLocal(ajudantes)}</td></tr></tbody></table>
+<div class="field" style="margin-top:12px"><span class="label">Observação</span><div class="value">${escLocal(observacoes)}</div></div>
+<div class="section-title">ROTA DO TRANSPORTE</div>
+<div class="route-grid"><div class="route-box"><span class="label">Coleta / Origem</span><div class="value">${escLocal(q.origin)}</div></div><div class="route-box"><span class="label">Destino</span><div class="value">${escLocal(q.destination)}</div></div></div>
+<div class="section-title">2. COLETA, DESTINO E PRAZO</div>
+<div class="grid"><div class="field"><span class="label">Local de coleta</span><div class="value">${escLocal(q.origin)}</div></div><div class="field"><span class="label">Local de entrega</span><div class="value">${escLocal(q.destination)}</div></div><div class="field full"><span class="label">Descrição informada pelo cliente</span><div class="value">${escLocal(q.details)}</div></div></div>
+${footer(1)}
+</section>
+
+<section class="page">
+${header}
+<div class="section-title">3. VALOR DO SERVIÇO</div>
+<table><thead><tr><th>Descrição</th><th class="amount">Valor</th></tr></thead><tbody><tr><td>Serviço de transporte</td><td class="amount">${dinheiro(total)}</td></tr></tbody></table>
+<div class="summary"><div><small>VALOR TOTAL DA PROPOSTA</small><strong>Resumo do investimento</strong></div><strong>${dinheiro(total)}</strong></div>
+<div class="section-title">4. FORMAS DE PAGAMENTO</div>
+<div class="payment">${escLocal(pagamento).replace(/\n/g,'<br><br>')}</div>
+<div class="section-title">RESUMO DA PROPOSTA</div>
+<div class="grid">
+<div class="field"><span class="label">Proposta nº</span><div class="value">${escLocal(numero)}</div></div>
+<div class="field"><span class="label">Data de emissão</span><div class="value">${escLocal(data)}</div></div>
+<div class="field"><span class="label">Origem</span><div class="value">${escLocal(q.origin)}</div></div>
+<div class="field"><span class="label">Destino</span><div class="value">${escLocal(q.destination)}</div></div>
+<div class="field full"><span class="label">Prazo estimado de entrega</span><div class="value">${escLocal(prazo)}</div></div>
+</div>
+<div class="summary"><div><small>VALOR TOTAL</small><strong>Proposta comercial</strong></div><strong>${dinheiro(total)}</strong></div>
+<div class="slogan">Sua carga em boas mãos. Seu negócio em movimento.</div>
+${footer(2)}
+</section>
+
+<section class="page">
+${header}
+<div class="section-title">5. CLÁUSULAS E CONDIÇÕES</div>
+<ol class="clauses">${clauses.map(item=>`<li>${escLocal(item)}</li>`).join('')}</ol>
+<div class="validity"><strong>Validade da proposta:</strong> Esta proposta tem validade de ${escLocal(validade)} a contar da data em que foi gerada.</div>
+<div class="validity"><strong>Prazo de entrega:</strong> ${escLocal(prazo)}. O prazo começa após a coleta e o cumprimento das condições de pagamento acordadas, salvo ajuste expresso entre as partes.</div>
+<div class="validity"><strong>Observações:</strong><br>${escLocal(observacoes)}</div>
+<div style="margin-top:25px;text-align:center;font-weight:800">MK Logística Express</div>
+<div style="text-align:center;color:#64748b;font-size:9px">LOGÍSTICA • TRANSPORTE • EXPRESS</div>
+${footer(3)}
+</section>
+</body>
+</html>`;
+
+  const janela = window.open('', '_blank');
+  if (!janela) {
+    toast('O navegador bloqueou a janela. Permita pop-ups para gerar a proposta em PDF.', true);
+    return;
+  }
+  janela.document.open();
+  janela.document.write(documento);
+  janela.document.close();
+}
+
+function openModal(q) {
+  $('quoteForm').reset();
+  $('quoteId').value=q?.dbId||'';
+  $('modalTitle').textContent=q?'Editar cotação':'Nova cotação';
+  ['origin','destination','name','phone','email','service','details'].forEach(k=>$(k).value=q?.[k]||'');
+  $('editStatus').value=q?.status||'Nova cotação';
+  $('statusWrap').classList.toggle('hide',!q);
+  $('modalBackdrop').classList.add('open');
+}
+
+function closeModal() {
+  $('modalBackdrop').classList.remove('open');
+}
+
+$('newQuoteBtn').onclick=()=>openModal();
+$('closeModal').onclick=closeModal;
+$('cancelModal').onclick=closeModal;
+$('modalBackdrop').addEventListener('click',e=>{
+  if (e.target===$('modalBackdrop')) closeModal();
+});
+
+$('quoteForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  if (busy) return;
+  busy=true;
+  const btn=$('saveQuoteBtn');
+  setBusy(btn,true,'Salvando…');
+
+  const id=$('quoteId').value;
+  const old=quotes.find(q=>q.dbId===id);
+  const payload={
+    origem:$('origin').value.trim(),
+    destino:$('destination').value.trim(),
+    nome:$('name').value.trim(),
+    telefone:$('phone').value.trim(),
+    email:$('email').value.trim()||null,
+    servico:$('service').value,
+    detalhes:$('details').value.trim(),
+    status:old?$('editStatus').value:'Nova cotação',
+    atualizado_em:new Date().toISOString()
+  };
+
+  try {
+    let result;
+    if (old) {
+      result=await db.from('cotacoes').update(payload).eq('id',id).select().single();
+    } else {
+      payload.criado_por=currentUser.id;
+      result=await db.from('cotacoes').insert(payload).select().single();
+    }
+    if (result.error) throw result.error;
+    closeModal();
+    await refresh();
+    toast(old?'Cotação atualizada no banco.':'Cotação salva no banco.');
+  } catch(err) {
+    console.error(err);
+    toast('Erro ao salvar: '+(err.message||'verifique as políticas RLS'),true);
+  } finally {
+    busy=false;
+    setBusy(btn,false);
+  }
+});
+
+$('cards').addEventListener('click',async e=>{
+  const b=e.target.closest('button[data-action]');
+  if (!b) return;
+  const q=quotes.find(x=>x.dbId===b.dataset.id);
+  if (!q) return;
+  const action=b.dataset.action;
+
+  try {
+    if (action==='proposal') {
+      gerarPropostaPDF(q);
+      return;
+    }
+
+    if (action==='edit') {
+      openModal(q);
+      return;
+    }
+
+    if (action==='whatsapp') {
+      // Usa somente os dados que já estão no card da cotação; não pede dados extras.
+      let digits=String(q.phone||'').replace(/\D/g,'');
+      if (!digits) {
+        toast('Telefone não informado nesta cotação.',true);
+        return;
+      }
+      // Se o telefone tiver DDD, mas não tiver DDI, acrescenta o código do Brasil.
+      if (digits.length===10 || digits.length===11) digits='55'+digits;
+      // Um número brasileiro completo deve ter 55 + DDD + número.
+      if (digits.startsWith('55') && digits.length!==12 && digits.length!==13) {
+        toast('O telefone parece incompleto. Confira o DDD e o número do cliente.',true);
+        return;
+      }
+      if (!digits.startsWith('55') && digits.length<10) {
+        toast('Informe o telefone com DDD para abrir o WhatsApp.',true);
+        return;
+      }
+      const linhas=[
+        `Olá, ${q.name||'tudo bem'}! Tudo bem?`,
+        '',
+        'Aqui é da MK Logística Express. Recebemos sua solicitação e estamos entrando em contato para dar continuidade ao atendimento.',
+        '',
+        `*Serviço:* ${q.service||'Não informado'}`,
+        `*Origem:* ${q.origin||'Não informada'}`,
+        `*Destino:* ${q.destination||'Não informado'}`,
+        `*Detalhes da carga:* ${q.details||'Não informado'}`,
+        '',
+        'Se houver algum detalhe adicional sobre a carga ou a mudança, por favor nos informe.',
+        '',
+        '*MK Logística Express*'
+      ];
+      const msg=linhas.join('\n');
+      const url='https://wa.me/'+digits+'?text='+encodeURIComponent(msg);
+      window.open(url,'_blank');
+      return;
+    }
+
+    if (action==='viewed') {
+      const {error}=await db.from('visualizacoes_cotacoes').upsert({
+        cotacao_id:q.dbId,
+        usuario_id:currentUser.id,
+        visualizada_em:new Date().toISOString()
+      },{onConflict:'cotacao_id,usuario_id'});
+      if (error) throw error;
+      await refresh();
+      toast('Visualização registrada.');
+      return;
+    }
+
+    if (action==='unviewed') {
+      const {error}=await db.from('visualizacoes_cotacoes')
+        .delete().eq('cotacao_id',q.dbId).eq('usuario_id',currentUser.id);
+      if (error) throw error;
+      await refresh();
+      toast('Cotação marcada como não vista.');
+      return;
+    }
+
+    if (action==='status') {
+      const n=prompt('Digite exatamente um status:\n'+STATUSES.join('\n'),q.status);
+      if (!n) return;
+      if (!STATUSES.includes(n)) {
+        toast('Status inválido.',true);
+        return;
+      }
+      const {error}=await db.from('cotacoes')
+        .update({status:n,atualizado_em:new Date().toISOString()}).eq('id',q.dbId);
+      if (error) throw error;
+      await refresh();
+      toast('Status atualizado.');
+      return;
+    }
+
+    if (action==='delete') {
+      if (!confirm('Excluir a cotação '+q.id+' de '+q.name+'? Esta ação não pode ser desfeita.')) return;
+      const {error}=await db.from('cotacoes').delete().eq('id',q.dbId);
+      if (error) throw error;
+      await refresh();
+      toast('Cotação excluída do banco.');
+    }
+  } catch(err) {
+    console.error(err);
+    toast('Não foi possível concluir: '+(err.message||'verifique as permissões do banco'),true);
+  }
+});
+
+['search','statusFilter','serviceFilter'].forEach(id=>{
+  $(id).addEventListener(id==='search'?'input':'change',render);
+});
+
+$('clearFilters').onclick=()=>{
+  $('search').value='';
+  $('statusFilter').value='';
+  $('serviceFilter').value='';
+  render();
+};
+
+$('exportBtn').onclick=()=>{
+  const cols=['id','createdAt','origin','destination','name','phone','email','service','details','status','viewedAt'];
+  const csv=[
+    cols.join(';'),
+    ...quotes.map(q=>cols.map(k=>'"'+String(q[k]??'').replace(/"/g,'""')+'"').join(';'))
+  ].join('\r\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}));
+  a.download='cotacoes-mk-logistica.csv';
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+
+$('connectionState').textContent='Supabase configurado';
+initSession();
+</script>
+</body>
+</html>
