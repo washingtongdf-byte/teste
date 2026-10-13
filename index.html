@@ -303,11 +303,16 @@ async function loadQuotes() {
     {data:views,error:viewErr}
   ]=await Promise.all([
     db.from('cotacoes').select('*').order('criado_em',{ascending:false}),
-    db.from('visualizacoes_cotacoes').select('cotacao_id,visualizada_em').eq('usuario_id',currentUser.id)
+    // A confirmação é compartilhada: consulta as visualizações de todos os usuários autorizados.
+    db.from('visualizacoes_cotacoes').select('cotacao_id,visualizada_em').order('visualizada_em',{ascending:false})
   ]);
   if (error) throw error;
   if (viewErr) throw viewErr;
-  const viewMap=new Map((views||[]).map(v=>[v.cotacao_id,v.visualizada_em]));
+  // Se qualquer usuário confirmou que viu a cotação, todos os usuários verão o selo "Visualizada".
+  const viewMap=new Map();
+  for (const v of (views||[])) {
+    if (!viewMap.has(v.cotacao_id)) viewMap.set(v.cotacao_id,v.visualizada_em);
+  }
   quotes=(rows||[]).map(r=>mapQuote({...r,my_viewed_at:viewMap.get(r.id)||null}));
   render();
 }
@@ -394,6 +399,12 @@ db.auth.onAuthStateChange(async(event,session)=>{
     }
   }
 });
+
+// Atualiza os painéis abertos periodicamente para refletir confirmações de outros usuários.
+// A leitura continua protegida pelas políticas de acesso do Supabase.
+setInterval(() => {
+  if (currentUser && !$('mainPanel').classList.contains('hide')) refresh();
+}, 15000);
 
 function render() {
   $('totalStat').textContent=quotes.length;
