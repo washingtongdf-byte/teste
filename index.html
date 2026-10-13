@@ -222,6 +222,12 @@ const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
 const STATUSES = ['Nova cotação','Usuário confirmado','Proposta enviada','Fechado','Perdido'];
 let quotes = [];
+const ADMIN_EMAIL = 'mklogisticaexpress@gmail.com';
+
+function isAdmin() {
+  return (currentUser?.email || '').trim().toLowerCase() === ADMIN_EMAIL;
+}
+
 let currentUser = null;
 let profiles = null;
 let busy = false;
@@ -468,7 +474,7 @@ function render() {
         <button class="secondary" data-action="whatsapp" data-id="${esc(q.dbId)}" ${disabled}>Abrir WhatsApp</button>
         <button class="primary" data-action="proposal" data-id="${esc(q.dbId)}" ${disabled}>📄 Gerar proposta PDF</button>
         <button class="outline" data-action="status" data-id="${esc(q.dbId)}" ${disabled}>Alterar status</button>
-        <button class="danger" data-action="delete" data-id="${esc(q.dbId)}" ${disabled}>Excluir</button>
+        ${isAdmin()?`<button class="danger" data-action="delete" data-id="${esc(q.dbId)}">Excluir</button>`:''}
       </div>
     </article>
   `}).join(''):'<div class="empty"><strong>Nenhuma cotação encontrada</strong>Quando houver pedidos no banco, eles aparecerão aqui. Você também pode adicionar uma cotação manualmente.</div>';
@@ -828,6 +834,10 @@ $('cards').addEventListener('click',async e=>{
     }
 
     if (action==='delete') {
+      if (!isAdmin()) {
+        toast('Somente o administrador pode excluir cotações.', true);
+        return;
+      }
       if (!confirm('Excluir a cotação '+q.id+' de '+q.name+'? Esta ação não pode ser desfeita.')) return;
       const {error}=await db.from('cotacoes').delete().eq('id',q.dbId);
       if (error) throw error;
