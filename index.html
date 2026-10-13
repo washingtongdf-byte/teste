@@ -12,7 +12,9 @@
 body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif}
 button,input,select,textarea{font:inherit}
 button{cursor:pointer;border:0;border-radius:10px;padding:10px 14px;font-weight:700}
-button:disabled{opacity:.55;cursor:wait}
+button:disabled{opacity:.48;cursor:not-allowed;filter:grayscale(.35)}
+.quote-locked .actions button:disabled,.quote-locked .quote-top button:disabled{pointer-events:none}
+.quote-locked{border-color:#cbd5e1}
 .primary{background:var(--blue);color:#fff}
 .primary:hover{background:#12578e}
 .secondary{background:#eaf1f8;color:#193d5e}
@@ -287,7 +289,8 @@ function mapQuote(row) {
     createdAt:row.criado_em,
     updatedAt:row.atualizado_em,
     viewedAt:row.my_viewed_at||null,
-    viewedBy:row.my_viewed_by||null
+    viewedBy:row.my_viewed_by||null,
+    viewedById:row.my_viewed_by_id||null
   };
 }
 
@@ -319,12 +322,13 @@ async function loadQuotes() {
   for (const v of (views||[])) {
     if (!viewMap.has(v.cotacao_id)) viewMap.set(v.cotacao_id,{
       at:v.visualizada_em,
-      by:nameMap.get(v.usuario_id)||'Usuário não identificado'
+      by:nameMap.get(v.usuario_id)||'Usuário não identificado',
+      userId:v.usuario_id
     });
   }
   quotes=(rows||[]).map(r=>{
     const first=viewMap.get(r.id);
-    return mapQuote({...r,my_viewed_at:first?.at||null,my_viewed_by:first?.by||null});
+    return mapQuote({...r,my_viewed_at:first?.at||null,my_viewed_by:first?.by||null,my_viewed_by_id:first?.userId||null});
   });
   render();
 }
@@ -437,15 +441,18 @@ function render() {
 
   $('resultCount').textContent=list.length+' resultado(s)';
 
-  $('cards').innerHTML=list.length?list.map(q=>`
-    <article class="quote">
+  $('cards').innerHTML=list.length?list.map(q=>{
+    const locked=!!q.viewedAt && q.viewedById!==currentUser?.id;
+    const disabled=locked?'disabled aria-disabled="true" title="Somente o primeiro usuário que confirmou pode usar as funções deste card."':'';
+    return `
+    <article class="quote ${locked?'quote-locked':''}">
       <div class="quote-top">
         <div>
           <div class="quote-id">${esc(q.id)} · ${esc(formatDate(q.createdAt))}</div>
           <span class="badge ${q.status==='Nova cotação'?'new':q.status==='Fechado'?'closed':''}">${esc(q.status)}</span>
           ${q.viewedAt?'<span class="badge viewed">Visualizada</span>':''}
         </div>
-        <button class="outline" data-action="edit" data-id="${esc(q.dbId)}">Editar</button>
+        <button class="outline" data-action="edit" data-id="${esc(q.dbId)}" ${disabled}>Editar</button>
       </div>
       <div class="route">${esc(q.origin)} <span>→</span> ${esc(q.destination)}</div>
       <div class="info">
@@ -457,14 +464,14 @@ function render() {
       <div class="description"><strong>Informações da carga</strong><br>${esc(q.details)}</div>
       ${q.viewedAt?`<p class="hint"><strong>Primeiro usuário que confirmou:</strong> ${esc(q.viewedBy||'Usuário não identificado')}<br><strong>Data e horário:</strong> ${esc(formatDate(q.viewedAt))}</p>`:''}
       <div class="actions">
-        ${!q.viewedAt?`<button class="success" data-action="viewed" data-id="${esc(q.dbId)}">✓ Confirmar que vi</button>`:`<button class="secondary" data-action="unviewed" data-id="${esc(q.dbId)}">Marcar não vista</button>`}
-        <button class="secondary" data-action="whatsapp" data-id="${esc(q.dbId)}">Abrir WhatsApp</button>
-        <button class="primary" data-action="proposal" data-id="${esc(q.dbId)}">📄 Gerar proposta PDF</button>
-        <button class="outline" data-action="status" data-id="${esc(q.dbId)}">Alterar status</button>
-        <button class="danger" data-action="delete" data-id="${esc(q.dbId)}">Excluir</button>
+        ${!q.viewedAt?`<button class="success" data-action="viewed" data-id="${esc(q.dbId)}">✓ Confirmar que vi</button>`:`<button class="secondary" data-action="unviewed" data-id="${esc(q.dbId)}" ${disabled}>Marcar não vista</button>`}
+        <button class="secondary" data-action="whatsapp" data-id="${esc(q.dbId)}" ${disabled}>Abrir WhatsApp</button>
+        <button class="primary" data-action="proposal" data-id="${esc(q.dbId)}" ${disabled}>📄 Gerar proposta PDF</button>
+        <button class="outline" data-action="status" data-id="${esc(q.dbId)}" ${disabled}>Alterar status</button>
+        <button class="danger" data-action="delete" data-id="${esc(q.dbId)}" ${disabled}>Excluir</button>
       </div>
     </article>
-  `).join(''):'<div class="empty"><strong>Nenhuma cotação encontrada</strong>Quando houver pedidos no banco, eles aparecerão aqui. Você também pode adicionar uma cotação manualmente.</div>';
+  `}).join(''):'<div class="empty"><strong>Nenhuma cotação encontrada</strong>Quando houver pedidos no banco, eles aparecerão aqui. Você também pode adicionar uma cotação manualmente.</div>';
 }
 
 function gerarPropostaPDF(q) {
@@ -730,6 +737,10 @@ $('cards').addEventListener('click',async e=>{
   const q=quotes.find(x=>x.dbId===b.dataset.id);
   if (!q) return;
   const action=b.dataset.action;
+  if (q.viewedAt && q.viewedById!==currentUser?.id) {
+    toast('Este card está confirmado por outro usuário. Você pode ver as informações, mas não pode usar os botões.',true);
+    return;
+  }
 
   try {
     if (action==='proposal') {
