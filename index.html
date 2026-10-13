@@ -286,7 +286,8 @@ function mapQuote(row) {
     status:row.status,
     createdAt:row.criado_em,
     updatedAt:row.atualizado_em,
-    viewedAt:row.my_viewed_at||null
+    viewedAt:row.my_viewed_at||null,
+    viewedBy:row.my_viewed_by||null
   };
 }
 
@@ -300,20 +301,31 @@ async function checkProfile() {
 async function loadQuotes() {
   const [
     {data:rows,error},
-    {data:views,error:viewErr}
+    {data:views,error:viewErr},
+    {data:profileRows,error:profileErr}
   ]=await Promise.all([
     db.from('cotacoes').select('*').order('criado_em',{ascending:false}),
-    // A confirmação é compartilhada: consulta as visualizações de todos os usuários autorizados.
-    db.from('visualizacoes_cotacoes').select('cotacao_id,visualizada_em').order('visualizada_em',{ascending:false})
+    // A confirmação é compartilhada e ordenada da mais antiga para a mais recente,
+    // para preservar quem foi o primeiro usuário a confirmar.
+    db.from('visualizacoes_cotacoes').select('cotacao_id,usuario_id,visualizada_em').order('visualizada_em',{ascending:true}),
+    db.from('perfis').select('id,nome')
   ]);
   if (error) throw error;
   if (viewErr) throw viewErr;
-  // Se qualquer usuário confirmou que viu a cotação, todos os usuários verão o selo "Visualizada".
+  if (profileErr) throw new Error('Não foi possível consultar os nomes dos usuários na tabela perfis: '+profileErr.message);
+  const nameMap=new Map((profileRows||[]).map(p=>[p.id,p.nome||'Usuário sem nome']));
+  // O primeiro registro de cada cotação é a primeira confirmação registrada no banco.
   const viewMap=new Map();
   for (const v of (views||[])) {
-    if (!viewMap.has(v.cotacao_id)) viewMap.set(v.cotacao_id,v.visualizada_em);
+    if (!viewMap.has(v.cotacao_id)) viewMap.set(v.cotacao_id,{
+      at:v.visualizada_em,
+      by:nameMap.get(v.usuario_id)||'Usuário não identificado'
+    });
   }
-  quotes=(rows||[]).map(r=>mapQuote({...r,my_viewed_at:viewMap.get(r.id)||null}));
+  quotes=(rows||[]).map(r=>{
+    const first=viewMap.get(r.id);
+    return mapQuote({...r,my_viewed_at:first?.at||null,my_viewed_by:first?.by||null});
+  });
   render();
 }
 
@@ -443,7 +455,7 @@ function render() {
         <div><small>Serviço</small><strong>${esc(q.service)}</strong></div>
       </div>
       <div class="description"><strong>Informações da carga</strong><br>${esc(q.details)}</div>
-      ${q.viewedAt?`<p class="hint">Visualizada em ${esc(formatDate(q.viewedAt))}</p>`:''}
+      ${q.viewedAt?`<p class="hint"><strong>Primeiro usuário que confirmou:</strong> ${esc(q.viewedBy||'Usuário não identificado')}<br><strong>Data e horário:</strong> ${esc(formatDate(q.viewedAt))}</p>`:''}
       <div class="actions">
         ${!q.viewedAt?`<button class="success" data-action="viewed" data-id="${esc(q.dbId)}">✓ Confirmar que vi</button>`:`<button class="secondary" data-action="unviewed" data-id="${esc(q.dbId)}">Marcar não vista</button>`}
         <button class="secondary" data-action="whatsapp" data-id="${esc(q.dbId)}">Abrir WhatsApp</button>
